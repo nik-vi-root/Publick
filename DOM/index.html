@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Шпаргалка по DOM JS</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #070b19 0%, #0f1e3d 50%, #050811 100%);
+      --card-bg: rgba(18, 27, 48, 0.85);
+      --card-border: rgba(219, 39, 119, 0.3);
+      /* Темно-розовая парящая тень */
+      --pink-shadow: 0 14px 30px -5px rgba(157, 23, 77, 0.55),
+        0 4px 15px -2px rgba(219, 39, 119, 0.3);
+      --pink-shadow-hover: 0 20px 40px -5px rgba(190, 24, 93, 0.75),
+        0 8px 20px -2px rgba(236, 72, 153, 0.45);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 40px 24px;
+      line-height: 1.5;
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #60a5fa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Сетка карточек */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Эффект парящей карточки */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--pink-shadow);
+      backdrop-filter: blur(10px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card:hover {
+      transform: translateY(-7px);
+      box-shadow: var(--pink-shadow-hover);
+      border-color: rgba(236, 72, 153, 0.65);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(157, 23, 77, 0.35);
+      border: 1px solid rgba(236, 72, 153, 0.4);
+      color: #fbcfe8;
+    }
+
+    /* Блок с кодом внутри карточки */
+    .code-box {
+      background: #060913;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .code-box:hover {
+      border-color: #ec4899;
+    }
+
+    .code-box::after {
+      content: 'Копировать';
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 0.7rem;
+      background: rgba(219, 39, 119, 0.2);
+      color: #f472b6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .code-box:hover::after {
+      opacity: 1;
+    }
+
+    .code-box.copied::after {
+      content: 'Скопировано!';
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      opacity: 1;
+    }
+
+    /* Подсветка синтаксиса */
+    .syn-obj {
+      color: #38bdf8;
+    }
+
+    /* document, element */
+    .syn-method {
+      color: #f472b6;
+    }
+
+    /* querySelector, addEventListener */
+    .syn-str {
+      color: #a3e635;
+    }
+
+    /* '.class', 'click' */
+    .syn-kw {
+      color: #c084fc;
+    }
+
+    /* const, let */
+
+    .card-desc {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+    }
+
+    /* Пользовательские классы для маркеров и цвета текста (как в Word) */
+    .m-pink {
+      background: rgba(219, 39, 119, 0.35);
+      color: #fce7f3;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .m-blue {
+      background: rgba(37, 99, 235, 0.4);
+      color: #dbeafe;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .m-yellow {
+      background: rgba(202, 138, 4, 0.35);
+      color: #fef08a;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .t-pink {
+      color: #f472b6;
+      font-weight: 600;
+    }
+
+    .t-cyan {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .t-green {
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    .search-box {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(219, 39, 119, 0.4);
+      background: rgba(6, 9, 19, 0.8);
+      color: #f8fafc;
+      font-size: 1rem;
+      outline: none;
+      box-shadow: 0 4px 15px rgba(157, 23, 77, 0.25);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-box:focus {
+      border-color: #ec4899;
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.5);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Шпаргалка по DOM JavaScript</h1>
+    <p>Нажмите на любой блок с кодом, чтобы скопировать команду</p>
+    <input type="text" id="searchInput" class="search-box" placeholder="Поиск по командам и описанию...">
+  </header>
+
+  <main class="grid" id="cardsGrid">
+    <!-- Карточки генерируются из массива ниже (или можно дописывать прямо в HTML) -->
+  </main>
+
+  <script>
+    const domCards = [
+      {
+        title: 'Слушатель событий',
+        category: 'События',
+        codeHtml: `<span class="syn-obj">btn</span>.<span class="syn-method">addEventListener</span>(<span class="syn-str">'click'</span>, (e) => {\n  <span class="syn-obj">e</span>.<span class="syn-method">preventDefault</span>();\n});`,
+        rawCode: `btn.addEventListener('click', (e) => {\n  e.preventDefault();\n});`,
+        desc: `Вешает обработчик на действие пользователя. Объект <span class="m-yellow">e.target</span> укажет на конкретный элемент, по которому кликнули.`
+      },
+      {
+        title: 'Поиск одного элемента',
+        category: 'Поиск',
+        codeHtml: `<span class="syn-kw">const</span> el = <span class="syn-obj">document</span>.<span class="syn-method">querySelector</span>(<span class="syn-str">'.class'</span>);`,
+        rawCode: `const el = document.querySelector('.class');`,
+        desc: `Возвращает <span class="m-pink">первый найденный элемент</span> на странице по любому CSS-селектору (<span class="t-cyan">.class</span>, <span class="t-cyan">#id</span>, <span class="t-cyan">div</span>). Если ничего не найдено — вернет <span class="t-pink">null</span>.`
+      },
+      {
+        title: 'Поиск всех элементов',
+        category: 'Поиск',
+        codeHtml: `<span class="syn-kw">const</span> list = <span class="syn-obj">document</span>.<span class="syn-method">querySelectorAll</span>(<span class="syn-str">'.item'</span>);`,
+        rawCode: `const list = document.querySelectorAll('.item');`,
+        desc: `Возвращает коллекцию <span class="m-blue">NodeList</span> из всех подходящих элементов. По ней можно сразу пройтись циклом <span class="t-green">forEach()</span>.`
+      },
+      {
+        title: 'Работа с классами',
+        category: 'Стили и классы',
+        codeHtml: `<span class="syn-obj">el</span>.classList.<span class="syn-method">toggle</span>(<span class="syn-str">'active'</span>);`,
+        rawCode: `el.classList.toggle('active');`,
+        desc: `Управляет CSS-классами элемента. Основные методы: <span class="t-green">add()</span> (добавить), <span class="t-pink">remove()</span> (удалить), <span class="m-yellow">toggle()</span> (переключить) и <span class="t-cyan">contains()</span> (проверить наличие).`
+      },
+      {
+        title: 'Изменение текста',
+        category: 'Контент',
+        codeHtml: `<span class="syn-obj">el</span>.<span class="syn-method">textContent</span> = <span class="syn-str">'Новый текст'</span>;`,
+        rawCode: `el.textContent = 'Новый текст';`,
+        desc: `Безопасно меняет текст внутри элемента. Все теги внутри строки будут восприняты как <span class="m-blue">обычный текст</span>, а не HTML-разметка.`
+      },
+      {
+        title: 'Вставка HTML-разметки',
+        category: 'Контент',
+        codeHtml: `<span class="syn-obj">el</span>.<span class="syn-method">innerHTML</span> = <span class="syn-str">'&lt;span&gt;Привет&lt;/span&gt;'</span>;`,
+        rawCode: `el.innerHTML = '<span>Привет</span>';`,
+        desc: `Полностью перезаписывает внутренний HTML элемента. Для добавления без перезаписи удобнее использовать <span class="m-pink">insertAdjacentHTML()</span>.`
+      },
+      {
+        title: 'Создание и вставка узла',
+        category: 'Дерево DOM',
+        codeHtml: `<span class="syn-kw">const</span> card = <span class="syn-obj">document</span>.<span class="syn-method">createElement</span>(<span class="syn-str">'div'</span>);\n<span class="syn-obj">parent</span>.<span class="syn-method">append</span>(card);`,
+        rawCode: `const card = document.createElement('div');\nparent.append(card);`,
+        desc: `Создает новый элемент в памяти. Чтобы он появился на странице, его нужно вставить в DOM через <span class="t-green">append()</span> (в конец) или <span class="t-cyan">prepend()</span> (в начало).`
+      },
+      {
+        title: 'Атрибуты и data-свойства',
+        category: 'Атрибуты',
+        codeHtml: `<span class="syn-kw">const</span> id = <span class="syn-obj">el</span>.dataset.<span class="syn-method">userId</span>;\n<span class="syn-obj">el</span>.<span class="syn-method">setAttribute</span>(<span class="syn-str">'src'</span>, <span class="syn-str">'img.png'</span>);`,
+        rawCode: `const id = el.dataset.userId;\nel.setAttribute('src', 'img.png');`,
+        desc: `Свойство <span class="m-pink">dataset</span> дает прямой доступ ко всем атрибутам вида <span class="t-cyan">data-*</span> (например, <span class="t-cyan">data-user-id</span> превращается в <span class="t-green">dataset.userId</span>).`
+      }
+    ];
+
+    const grid = document.getElementById('cardsGrid');
+
+    domCards.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-header">
+          <h2 class="card-title">${item.title}</h2>
+          <span class="badge">${item.category}</span>
+        </div>
+        <pre class="code-box" data-code="${item.rawCode.replace(/"/g, '&quot;')}"><code>${item.codeHtml}</code></pre>
+        <p class="card-desc">${item.desc}</p>
+      `;
+      grid.append(card);
+    });
+
+    // Копирование кода по клику на блок
+    grid.addEventListener('click', (e) => {
+      const codeBox = e.target.closest('.code-box');
+      if (!codeBox) return;
+
+      navigator.clipboard.writeText(codeBox.dataset.code);
+      codeBox.classList.add('copied');
+      setTimeout(() => codeBox.classList.remove('copied'), 1200);
+    });
+
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const allCards = document.querySelectorAll('.card');
+
+      allCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    });
+  </script>
+</body>
+
+</html>

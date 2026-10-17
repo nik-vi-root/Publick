@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Neon Words — Изучение английского</title>
+  <!-- Подключаем Vue 3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    :root {
+      --bg-color: #07090e;
+      --card-bg: #10141f;
+      --text-main: #ffffff;
+      --text-muted: #7b88a8;
+      --accent-primary: #00f0ff;
+      --accent-secondary: #0051ff;
+      --neon-glow: 0 0 12px rgba(0, 240, 255, 0.45), 0 0 25px rgba(0, 81, 255, 0.25);
+      --border-glow: 1px solid rgba(0, 240, 255, 0.5);
+    }
+
+    /* Женская тема: черный, фиолетовый, розовый неон */
+    [data-theme="female"] {
+      --bg-color: #0b0711;
+      --card-bg: #160f24;
+      --text-main: #ffffff;
+      --text-muted: #a68bb5;
+      --accent-primary: #ff2a85;
+      --accent-secondary: #9d00ff;
+      --neon-glow: 0 0 12px rgba(255, 42, 133, 0.45), 0 0 25px rgba(157, 0, 255, 0.25);
+      --border-glow: 1px solid rgba(255, 42, 133, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .app-container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Шапка и переключатель тем */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: var(--border-glow);
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-primary);
+      text-shadow: var(--neon-glow);
+    }
+
+    .theme-btn {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: var(--border-glow);
+      box-shadow: var(--neon-glow);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    /* Форма добавления слов */
+    .form-card {
+      background: var(--card-bg);
+      border: var(--border-glow);
+      box-shadow: var(--neon-glow);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 8px var(--accent-primary);
+    }
+
+    .btn-add {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--neon-glow);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-add:active {
+      transform: scale(0.98);
+    }
+
+    /* Панель управления повторением и голосом */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-quiz {
+      background: transparent;
+      border: 1px solid var(--accent-primary);
+      color: var(--accent-primary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .toggle-quiz.active {
+      background: var(--accent-primary);
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* Список карточек */
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .word-card {
+      background: var(--card-bg);
+      border: var(--border-glow);
+      box-shadow: var(--neon-glow);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .word-info {
+      flex: 1;
+      padding-right: 12px;
+    }
+
+    .word-en {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .word-tr {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-family: monospace;
+    }
+
+    .word-ru {
+      font-size: 1.05rem;
+      color: var(--text-main);
+      transition: filter 0.25s ease;
+    }
+
+    /* Замыливание перевода для режима повторения */
+    .word-ru.blurred {
+      filter: blur(6px);
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-speak {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: var(--border-glow);
+      color: var(--accent-primary);
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--neon-glow);
+    }
+
+    .btn-speak:active {
+      transform: scale(0.92);
+    }
+
+    .btn-delete {
+      background: transparent;
+      border: none;
+      color: #ff4757;
+      font-size: 1.1rem;
+      cursor: pointer;
+      opacity: 0.6;
+      padding: 6px;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 30px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app" class="app-container">
+  <!-- Шапка -->
+  <header class="header">
+    <div class="title">Neon Lexicon</div>
+    <button class="theme-btn" @click="toggleTheme">
+      {{ theme === 'male' ? '♂ Мужская (Синий)' : '♀ Женская (Розовый)' }}
+    </button>
+  </header>
+
+  <!-- Форма ввода -->
+  <div class="form-card">
+    <div class="input-group">
+      <input 
+        type="text" 
+        v-model="newWord" 
+        placeholder="Слово на английском (напр. Resilience)" 
+        @keyup.enter="addCard"
+      >
+    </div>
+    <div class="input-group">
+      <input 
+        type="text" 
+        v-model="newTranscription" 
+        placeholder="Транскрипция (напр. rɪˈzɪl.jəns)" 
+        @keyup.enter="addCard"
+      >
+    </div>
+    <div class="input-group">
+      <input 
+        type="text" 
+        v-model="newTranslation" 
+        placeholder="Перевод (напр. Стойкость / Упругость)" 
+        @keyup.enter="addCard"
+      >
+    </div>
+    <button class="btn-add" @click="addCard">Добавить карточку</button>
+  </div>
+
+  <!-- Панель режима проверки и подсказки голоса -->
+  <div class="controls-bar">
+    <span>Озвучка: <b>{{ theme === 'male' ? 'Женский голос' : 'Мужской голос' }}</b></span>
+    <button 
+      class="toggle-quiz" 
+      :class="{ active: quizMode }" 
+      @click="quizMode = !quizMode"
+    >
+      {{ quizMode ? '👁 Показать переводы' : '🙈 Режим повторения' }}
+    </button>
+  </div>
+
+  <!-- Список карточек -->
+  <div class="cards-list" v-if="cards.length > 0">
+    <div class="word-card" v-for="card in cards" :key="card.id">
+      <div class="word-info" @click="card.revealed = !card.revealed">
+        <div class="word-en">{{ card.word }}</div>
+        <div class="word-tr" v-if="card.transcription">[{{ cleanTranscription(card.transcription) }}]</div>
+        <div 
+          class="word-ru" 
+          :class="{ blurred: quizMode && !card.revealed }"
+          title="Нажмите, чтобы подсмотреть"
+        >
+          {{ card.translation }}
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-speak" @click="speak(card.word)" title="Озвучить">
+          🔊
+        </button>
+        <button class="btn-delete" @click="removeCard(card.id)" title="Удалить">
+          ✖
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" v-else>
+    Пока нет карточек. Добавьте первое слово выше!
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      theme: localStorage.getItem('neon_theme') || 'male',
+      newWord: '',
+      newTranscription: '',
+      newTranslation: '',
+      quizMode: false,
+      voices: [],
+      cards: JSON.parse(localStorage.getItem('neon_cards')) || [
+        {
+          id: 1,
+          word: 'Connection',
+          transcription: 'kəˈnek.ʃən',
+          translation: 'Соединение, связь',
+          revealed: false
+        },
+        {
+          id: 2,
+          word: 'Voltage',
+          transcription: 'ˈvəʊl.tɪdʒ',
+          translation: 'Напряжение',
+          revealed: false
+        }
+      ]
+    };
+  },
+  mounted() {
+    this.applyTheme();
+    this.initVoices();
+  },
+  methods: {
+    // Переключение темы
+    toggleTheme() {
+      this.theme = this.theme === 'male' ? 'female' : 'male';
+      localStorage.setItem('neon_theme', this.theme);
+      this.applyTheme();
+    },
+    applyTheme() {
+      document.documentElement.setAttribute('data-theme', this.theme);
+    },
+
+    // Добавление карточки
+    addCard() {
+      if (!this.newWord.trim() || !this.newTranslation.trim()) return;
+
+      this.cards.unshift({
+        id: Date.now(),
+        word: this.newWord.trim(),
+        transcription: this.newTranscription.trim(),
+        translation: this.newTranslation.trim(),
+        revealed: false
+      });
+
+      this.saveCards();
+      this.newWord = '';
+      this.newTranscription = '';
+      this.newTranslation = '';
+    },
+
+    // Удаление карточки
+    removeCard(id) {
+      this.cards = this.cards.filter(c => c.id !== id);
+      this.saveCards();
+    },
+
+    // Сохранение в память браузера
+    saveCards() {
+      localStorage.setItem('neon_cards', JSON.stringify(this.cards));
+    },
+
+    // Убираем лишние скобки, если ввели их вручную
+    cleanTranscription(str) {
+      return str.replace(/^\[|\]$/g, '');
+    },
+
+    // Загрузка системных голосов браузера
+    initVoices() {
+      const load = () => {
+        this.voices = window.speechSynthesis.getVoices();
+      };
+      load();
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = load;
+      }
+    },
+
+    // Озвучка слова с подбором пола голоса
+    speak(text) {
+      if (!('speechSynthesis' in window)) {
+        alert('Ваш браузер не поддерживает озвучку');
+        return;
+      }
+
+      // Останавливаем текущую речь, если нажали повторно
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9; // Чуть медленнее стандартного для четкости произношения
+
+      // Фильтруем только английские голоса
+      const enVoices = this.voices.filter(v => v.lang.startsWith('en'));
+
+      // Популярные маркеры женских и мужских голосов в Android, iOS и Windows/Linux
+      const femaleKeywords = ['female', 'samantha', 'victoria', 'karen', 'zira', 'hazel', 'susan', 'google us english', 'aria', 'jenny'];
+      const maleKeywords = ['male', 'daniel', 'alex', 'david', 'mark', 'fred', 'guy', 'aaron', 'arthur', 'ryan'];
+
+      let selectedVoice = null;
+
+      if (this.theme === 'male') {
+        // Для мужской темы ищем приятный женский голос
+        selectedVoice = enVoices.find(v => 
+          femaleKeywords.some(kw => v.name.toLowerCase().includes(kw)) &&
+          !v.name.toLowerCase().includes('male')
+        );
+        // На случай если система не отдает женский голос явно, слегка повышаем тембр
+        utterance.pitch = selectedVoice ? 1.05 : 1.25;
+      } else {
+        // Для женской темы ищем мужской голос
+        selectedVoice = enVoices.find(v => 
+          maleKeywords.some(kw => v.name.toLowerCase().includes(kw)) &&
+          !v.name.toLowerCase().includes('female')
+        );
+        // Если в телефоне только один стандартный голос, понижаем тембр под мужской
+        utterance.pitch = selectedVoice ? 0.95 : 0.75;
+      }
+
+      // Если нашли подходящий голос — назначаем, иначе берем первый английский
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      } else if (enVoices.length > 0) {
+        utterance.voice = enVoices[0];
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+}).mount('#app');
+</script>
+
+</body>
+</html>

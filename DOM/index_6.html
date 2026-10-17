@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>База знаний: Skillbox, Обучение, Linux, Windows</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #070b19 0%, #0f1e3d 50%, #050811 100%);
+      --card-bg: rgba(18, 27, 48, 0.85);
+      --card-pinned-bg: rgba(28, 25, 54, 0.92);
+      --sidebar-bg: rgba(10, 15, 30, 0.96);
+      --card-border: rgba(219, 39, 119, 0.3);
+      --pink-shadow: 0 14px 30px -5px rgba(157, 23, 77, 0.55), 
+                     0 4px 15px -2px rgba(219, 39, 119, 0.3);
+      --pink-shadow-hover: 0 20px 40px -5px rgba(190, 24, 93, 0.75), 
+                           0 8px 20px -2px rgba(236, 72, 153, 0.45);
+      --pinned-shadow: 0 14px 32px -4px rgba(245, 158, 11, 0.35),
+                       0 6px 20px -2px rgba(219, 39, 119, 0.45);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 40px 24px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ================= ВЕРХНИЕ ПЛАВАЮЩИЕ КНОПКИ ================= */
+    .burger-btn, .add-card-btn {
+      position: fixed;
+      top: 24px;
+      z-index: 1001;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(236, 72, 153, 0.5);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(157, 23, 77, 0.5);
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .burger-btn { left: 24px; }
+    .add-card-btn {
+      right: 24px;
+      background: linear-gradient(135deg, #be185d, #6d28d9);
+      border-color: #f472b6;
+      color: #fff;
+    }
+
+    .burger-btn:hover, .add-card-btn:hover {
+      border-color: #f472b6;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(236, 72, 153, 0.75);
+    }
+
+    .burger-icon {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 18px;
+    }
+
+    .burger-icon span {
+      display: block;
+      height: 2px;
+      width: 100%;
+      background: #f472b6;
+      border-radius: 2px;
+    }
+
+    /* ================= БОКОВОЕ МЕНЮ (ГЛАВЫ) ================= */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 6, 14, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 290px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid rgba(236, 72, 153, 0.35);
+      box-shadow: 10px 0 35px rgba(157, 23, 77, 0.45);
+      z-index: 1000;
+      padding: 85px 20px 24px;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      margin: 10px 8px 4px;
+    }
+
+    .chapter-btn {
+      background: rgba(18, 27, 48, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      color: var(--text-main);
+      padding: 11px 16px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chapter-btn:hover {
+      border-color: rgba(244, 114, 182, 0.5);
+      background: rgba(30, 41, 69, 0.9);
+      transform: translateX(4px);
+    }
+
+    .chapter-btn.active {
+      background: linear-gradient(135deg, #be185d, #4f46e5);
+      border-color: #f472b6;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 6px 18px rgba(219, 39, 119, 0.45);
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .util-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: var(--text-muted);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: left;
+    }
+
+    .util-btn:hover {
+      color: #fff;
+      border-color: #f472b6;
+      background: rgba(30, 41, 69, 0.7);
+    }
+
+    /* ================= ШАПКА И ВКЛАДКИ ================= */
+    header {
+      max-width: 1200px;
+      margin: 0 auto 36px;
+      text-align: center;
+    }
+
+    .current-chapter-label {
+      display: inline-block;
+      font-size: 0.85rem;
+      color: #f472b6;
+      background: rgba(219, 39, 119, 0.15);
+      border: 1px solid rgba(236, 72, 153, 0.35);
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #60a5fa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .controls {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(219, 39, 119, 0.35);
+      color: var(--text-main);
+      padding: 9px 20px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: #f472b6;
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #be185d, #7e22ce);
+      border-color: #f472b6;
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(219, 39, 119, 0.6);
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(219, 39, 119, 0.4);
+      background: rgba(6, 9, 19, 0.85);
+      color: #f8fafc;
+      font-size: 1rem;
+      outline: none;
+      box-shadow: 0 4px 15px rgba(157, 23, 77, 0.25);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-box:focus {
+      border-color: #ec4899;
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.5);
+    }
+
+    /* ================= СЕТКА И КАРТОЧКИ ================= */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(387px, 1fr));
+      gap: 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--pink-shadow);
+      backdrop-filter: blur(10px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-7px);
+      box-shadow: var(--pink-shadow-hover);
+      border-color: rgba(236, 72, 153, 0.65);
+    }
+
+    /* Стиль закрепленной (избранной) карточки */
+    .card.pinned {
+      background: var(--card-pinned-bg);
+      border-color: rgba(251, 191, 36, 0.65);
+      box-shadow: var(--pinned-shadow);
+    }
+
+    .card.pinned:hover {
+      border-color: #fbbf24;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 1.12rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(157, 23, 77, 0.35);
+      border: 1px solid rgba(236, 72, 153, 0.4);
+      color: #fbcfe8;
+      white-space: nowrap;
+    }
+
+    .pin-card-btn, .edit-card-btn, .delete-card-btn {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 1.08rem;
+      cursor: pointer;
+      padding: 2px 4px;
+      line-height: 1;
+      transition: color 0.2s, transform 0.15s;
+    }
+
+    .pin-card-btn:hover {
+      color: #fbbf24;
+      transform: scale(1.18);
+    }
+
+    .pin-card-btn.active {
+      color: #fbbf24;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.7);
+    }
+
+    .edit-card-btn:hover {
+      color: #38bdf8;
+      transform: scale(1.15);
+    }
+
+    .delete-card-btn:hover {
+      color: #f43f5e;
+      transform: scale(1.15);
+    }
+
+    .code-box {
+      background: #060913;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .code-box:hover {
+      border-color: #ec4899;
+    }
+
+    .code-box::after {
+      content: 'Копировать';
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 0.7rem;
+      background: rgba(219, 39, 119, 0.2);
+      color: #f472b6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .code-box:hover::after { opacity: 1; }
+
+    .code-box.copied::after {
+      content: 'Скопировано!';
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      opacity: 1;
+    }
+
+    .syn-obj { color: #38bdf8; }
+    .syn-method { color: #f472b6; }
+    .syn-str { color: #a3e635; }
+    .syn-kw { color: #c084fc; }
+
+    .card-desc {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      word-break: break-word;
+    }
+
+    /* Классы маркеров и цвета текста */
+    .m-pink { background: rgba(219, 39, 119, 0.38); color: #fce7f3; padding: 1px 6px; border-radius: 4px; }
+    .m-blue { background: rgba(37, 99, 235, 0.42); color: #dbeafe; padding: 1px 6px; border-radius: 4px; }
+    .m-yellow { background: rgba(202, 138, 4, 0.38); color: #fef08a; padding: 1px 6px; border-radius: 4px; }
+    .t-pink { color: #f472b6; font-weight: 600; }
+    .t-cyan { color: #38bdf8; font-weight: 600; }
+    .t-green { color: #4ade80; font-weight: 600; }
+
+    /* ================= МОДАЛЬНОЕ ОКНО И ПАНЕЛЬ ВЫДЕЛЕНИЯ ================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 6, 14, 0.78);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.25s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: #0d1527;
+      border: 1px solid rgba(236, 72, 153, 0.45);
+      box-shadow: var(--pink-shadow-hover);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 580px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.3rem;
+      color: #f8fafc;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .form-input, .form-textarea {
+      background: #060913;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #f8fafc;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus, .form-textarea:focus, .wysiwyg-editor:focus {
+      border-color: #ec4899;
+    }
+
+    .form-textarea {
+      font-family: 'Fira Code', monospace;
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    .format-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #1e293b;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .toolbar-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-right: 2px;
+    }
+
+    .fmt-btn {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.15s;
+    }
+
+    .fmt-btn:hover { transform: scale(1.06); }
+
+    .color-picker-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .color-picker-wrap input[type="color"] {
+      border: none;
+      width: 20px;
+      height: 20px;
+      background: none;
+      cursor: pointer;
+    }
+
+    .wysiwyg-editor {
+      background: #060913;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 90px;
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    .wysiwyg-editor:empty::before {
+      content: attr(data-placeholder);
+      color: #475569;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #be185d, #7e22ce);
+      border: 1px solid #f472b6;
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .submit-btn:hover {
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Кнопка открытия бургер-меню -->
+  <button class="burger-btn" id="burgerBtn">
+    <div class="burger-icon">
+      <span></span><span></span><span></span>
+    </div>
+    <span>Главы</span>
+  </button>
+
+  <!-- Кнопка добавления новой карточки -->
+  <button class="add-card-btn" id="openModalBtn">+ Карточка</button>
+
+  <!-- Затемнение фона для меню -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Боковое меню (Главные главы и управление базой) -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-nav" id="sidebarNav"></div>
+    <div class="sidebar-footer">
+      <button class="util-btn" id="exportBtn">⬇ Скачать базу в файл (.json)</button>
+      <button class="util-btn" id="importBtn">⬆ Загрузить базу из файла (.json)</button>
+      <input type="file" id="importFileInput" accept=".json,application/json" style="display: none;">
+      <button class="util-btn" id="resetBtn">↺ Сбросить к стандартным</button>
+    </div>
+  </aside>
+
+  <!-- Модальное окно создания и редактирования карточки -->
+  <div class="modal-overlay" id="modalOverlay">
+    <form class="modal" id="addCardForm">
+      <div class="modal-header">
+        <h2 id="modalTitle">Новая карточка</h2>
+        <button type="button" class="close-modal" id="closeModalBtn">&times;</button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Глава (в боковом меню)</label>
+          <input type="text" id="cardChapter" list="chaptersList" class="form-input" placeholder="Например: Skillbox" required>
+          <datalist id="chaptersList"></datalist>
+        </div>
+        <div class="form-group">
+          <label>Раздел (верхняя вкладка)</label>
+          <input type="text" id="cardSection" list="sectionsList" class="form-input" placeholder="Например: DOM" required>
+          <datalist id="sectionsList"></datalist>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Заголовок карточки</label>
+        <input type="text" id="cardTitle" class="form-input" placeholder="Например: Поиск элемента по классу" required>
+      </div>
+
+      <div class="form-group">
+        <label>Код или команда</label>
+        <textarea id="cardCode" class="form-textarea" placeholder="const el = document.querySelector('.box');" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Описание (выделите слово мышкой и нажмите кнопку цвета)</label>
+        <div class="format-toolbar">
+          <span class="toolbar-label">Маркер:</span>
+          <button type="button" class="fmt-btn m-pink" data-action="class" data-val="m-pink">Розовый</button>
+          <button type="button" class="fmt-btn m-blue" data-action="class" data-val="m-blue">Синий</button>
+          <button type="button" class="fmt-btn m-yellow" data-action="class" data-val="m-yellow">Желтый</button>
+          <label class="color-picker-wrap" title="Любой цвет маркера">
+            <span>Фон</span>
+            <input type="color" id="customBgColor" value="#9d174d">
+          </label>
+
+          <span class="toolbar-label" style="margin-left: 6px;">Текст:</span>
+          <button type="button" class="fmt-btn t-pink" style="background:#0f172a" data-action="class" data-val="t-pink">А</button>
+          <button type="button" class="fmt-btn t-cyan" style="background:#0f172a" data-action="class" data-val="t-cyan">А</button>
+          <button type="button" class="fmt-btn t-green" style="background:#0f172a" data-action="class" data-val="t-green">А</button>
+          <label class="color-picker-wrap" title="Любой цвет текста">
+            <span>Цвет</span>
+            <input type="color" id="customTextColor" value="#f472b6">
+          </label>
+
+          <button type="button" class="fmt-btn" style="background:#1e293b; color:#cbd5e1;" id="clearFmtBtn">Очистить</button>
+        </div>
+        <div id="descEditor" class="wysiwyg-editor" contenteditable="true" data-placeholder="Напишите пояснение. Выделите важное слово и покрасьте его кнопками выше..."></div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitModalBtn">Сохранить карточку</button>
+    </form>
+  </div>
+
+  <header>
+    <div class="current-chapter-label" id="currentChapterBadge">Глава: Все главы</div>
+    <h1>Интерактивная база знаний</h1>
+    <p>Нажмите на блок с кодом, чтобы скопировать команду</p>
+
+    <div class="controls">
+      <div class="tabs" id="tabsContainer"></div>
+      <input type="text" id="searchInput" class="search-box" placeholder="Поиск по командам и описанию...">
+    </div>
+  </header>
+
+  <main class="grid" id="cardsGrid"></main>
+
+  <script>
+    const STORAGE_KEY = 'dev_knowledge_cards_v1';
+
+    const defaultCards = [
+      {
+        id: 1,
+        pinned: true,
+        chapter: 'Skillbox',
+        section: 'DOM',
+        title: 'Поиск одного элемента',
+        category: 'Skillbox • DOM',
+        rawCode: `const el = document.querySelector('.class');`,
+        desc: `Возвращает <span class="m-pink">первый найденный элемент</span> по CSS-селектору. Если не найден — вернет <span class="t-pink">null</span>.`
+      },
+      {
+        id: 2,
+        pinned: false,
+        chapter: 'Skillbox',
+        section: 'DOM',
+        title: 'Слушатель событий',
+        category: 'Skillbox • События',
+        rawCode: `btn.addEventListener('click', (e) => {\n  e.preventDefault();\n});`,
+        desc: `Вешает обработчик события. <span class="m-yellow">e.preventDefault()</span> отменяет стандартное поведение браузера.`
+      },
+      {
+        id: 3,
+        pinned: false,
+        chapter: 'Skillbox',
+        section: 'Массивы',
+        title: 'Фильтрация массива (filter)',
+        category: 'Skillbox • Массивы',
+        rawCode: `const active = users.filter(u => u.isOnline);`,
+        desc: `Создает <span class="m-blue">новый массив</span> со всеми элементами, прошедшими проверку в функции.`
+      },
+      {
+        id: 4,
+        pinned: false,
+        chapter: 'Моё обучение',
+        section: 'Vue',
+        title: 'Реактивная переменная (ref)',
+        category: 'Обучение • Vue 3',
+        rawCode: `const count = ref(0);\ncount.value++;`,
+        desc: `Создает реактивную ссылку. В скрипте меняем через <span class="m-pink">.value</span>, в шаблоне <span class="t-cyan">&lt;template&gt;</span> пишем без него.`
+      },
+      {
+        id: 5,
+        pinned: false,
+        chapter: 'Linux',
+        section: 'Терминал',
+        title: 'Права на выполнение скрипта',
+        category: 'Linux • Bash',
+        rawCode: `chmod +x script.sh`,
+        desc: `Делает файл исполняемым, чтобы его можно было запустить напрямую через <span class="t-green">./script.sh</span>.`
+      },
+      {
+        id: 6,
+        pinned: false,
+        chapter: 'Linux',
+        section: 'Docker',
+        title: 'Просмотр логов контейнера',
+        category: 'Linux • Docker',
+        rawCode: `docker logs -f container_name`,
+        desc: `Выводит логи работы контейнера. Флаг <span class="m-pink">-f</span> оставляет поток открытым в реальном времени.`
+      },
+      {
+        id: 7,
+        pinned: false,
+        chapter: 'Windows',
+        section: 'Сеть и Консоль',
+        title: 'Очистка DNS-кэша и сеть',
+        category: 'Windows • CMD',
+        rawCode: `ipconfig /flushdns\nnetstat -ano | findstr :8080`,
+        desc: `Первая команда сбрасывает DNS, вторая ищет <span class="m-blue">PID процесса</span>, который занял нужный порт.`
+      }
+    ];
+
+    let cardsData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultCards;
+    let currentChapter = 'all';
+    let currentSection = 'all';
+    let editingCardId = null;
+
+    const grid = document.getElementById('cardsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const tabsContainer = document.getElementById('tabsContainer');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarNav = document.getElementById('sidebarNav');
+    const burgerBtn = document.getElementById('burgerBtn');
+    const overlay = document.getElementById('overlay');
+    const currentChapterBadge = document.getElementById('currentChapterBadge');
+
+    function saveToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cardsData));
+    }
+
+    // Автоматическая подсветка синтаксиса
+    function highlightCode(raw) {
+      let escaped = raw
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      return escaped
+        .replace(/('[^']*'|"[^"]*"|`[^`]*`)/g, '<span class="syn-str">$1</span>')
+        .replace(/\b(const|let|var|function|return|async|await|if|else|for|sudo|chmod)\b/g, '<span class="syn-kw">$1</span>')
+        .replace(/\b(document|window|console|el|btn|users|docker|ipconfig|netstat)\b/g, '<span class="syn-obj">$1</span>')
+        .replace(/\.([a-zA-Z0-9_]+)(?=\()/g, '.<span class="syn-method">$1</span>');
+    }
+
+    // Отрисовка бокового меню и списков автодополнения
+    function renderSidebar() {
+      const baseChapters = ['Skillbox', 'Моё обучение', 'Linux', 'Windows'];
+      const allChapters = [...new Set([...baseChapters, ...cardsData.map(c => c.chapter)])];
+
+      sidebarNav.innerHTML = `
+        <div class="sidebar-title">Навигация</div>
+        <button class="chapter-btn ${currentChapter === 'all' ? 'active' : ''}" data-chapter="all">Все главы</button>
+        <div class="sidebar-title">Разделы базы</div>
+      `;
+
+      allChapters.forEach(ch => {
+        const btn = document.createElement('button');
+        btn.className = `chapter-btn ${currentChapter === ch ? 'active' : ''}`;
+        btn.dataset.chapter = ch;
+        btn.textContent = ch;
+        sidebarNav.append(btn);
+      });
+
+      const chaptersList = document.getElementById('chaptersList');
+      const sectionsList = document.getElementById('sectionsList');
+      chaptersList.innerHTML = allChapters.map(c => `<option value="${c}">`).join('');
+      const allSections = [...new Set(cardsData.map(c => c.section))];
+      sectionsList.innerHTML = allSections.map(s => `<option value="${s}">`).join('');
+    }
+
+    // Отрисовка карточек (закрепленные всегда отображаются первыми)
+    function renderCards() {
+      grid.innerHTML = '';
+
+      const sortedCards = [...cardsData].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)));
+
+      sortedCards.forEach(item => {
+        const card = document.createElement('article');
+        card.className = `card ${item.pinned ? 'pinned' : ''}`;
+        card.dataset.chapter = item.chapter;
+        card.dataset.section = item.section;
+
+        const codeContent = highlightCode(item.rawCode);
+
+        card.innerHTML = `
+          <div class="card-header">
+            <h2 class="card-title">${item.title}</h2>
+            <div class="header-right">
+              <span class="badge">${item.category || (item.chapter + ' • ' + item.section)}</span>
+              <button class="pin-card-btn ${item.pinned ? 'active' : ''}" data-id="${item.id}" title="${item.pinned ? 'Открепить карточку' : 'Закрепить вверху списка'}">&#9733;</button>
+              <button class="edit-card-btn" data-id="${item.id}" title="Редактировать карточку">&#9998;</button>
+              <button class="delete-card-btn" data-id="${item.id}" title="Удалить карточку">&times;</button>
+            </div>
+          </div>
+          <pre class="code-box" data-code="${item.rawCode.replace(/"/g, '&quot;')}"><code>${codeContent}</code></pre>
+          <div class="card-desc">${item.desc}</div>
+        `;
+        grid.append(card);
+      });
+      filterCards();
+    }
+
+    // Генерация верхних вкладок
+    function renderTopTabs() {
+      const relevantCards = currentChapter === 'all'
+        ? cardsData
+        : cardsData.filter(c => c.chapter === currentChapter);
+
+      const sections = ['all', ...new Set(relevantCards.map(c => c.section))];
+      tabsContainer.innerHTML = '';
+
+      sections.forEach(sec => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${sec === currentSection ? 'active' : ''}`;
+        btn.dataset.section = sec;
+        btn.textContent = sec === 'all' ? 'Все разделы' : sec;
+        tabsContainer.append(btn);
+      });
+    }
+
+    function filterCards() {
+      const query = searchInput.value.toLowerCase();
+      const allCards = document.querySelectorAll('.card');
+
+      allCards.forEach(card => {
+        const matchesChapter = currentChapter === 'all' || card.dataset.chapter === currentChapter;
+        const matchesSection = currentSection === 'all' || card.dataset.section === currentSection;
+        const matchesSearch = card.textContent.toLowerCase().includes(query);
+
+        card.style.display = (matchesChapter && matchesSection && matchesSearch) ? 'flex' : 'none';
+      });
+    }
+
+    function toggleMenu() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    burgerBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    sidebarNav.addEventListener('click', (e) => {
+      const btn = e.target.closest('.chapter-btn');
+      if (!btn) return;
+
+      currentChapter = btn.dataset.chapter;
+      currentSection = 'all';
+      currentChapterBadge.textContent = `Глава: ${btn.textContent}`;
+
+      renderSidebar();
+      renderTopTabs();
+      filterCards();
+      toggleMenu();
+    });
+
+    tabsContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      currentSection = btn.dataset.section;
+      filterCards();
+    });
+
+    searchInput.addEventListener('input', filterCards);
+
+    // ================= МОДАЛЬНОЕ ОКНО (СОЗДАНИЕ И РЕДАКТИРОВАНИЕ) =================
+    const modalOverlay = document.getElementById('modalOverlay');
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const addCardForm = document.getElementById('addCardForm');
+    const descEditor = document.getElementById('descEditor');
+    const modalTitle = document.getElementById('modalTitle');
+    const submitModalBtn = document.getElementById('submitModalBtn');
+
+    openModalBtn.addEventListener('click', () => {
+      editingCardId = null;
+      modalTitle.textContent = 'Новая карточка';
+      submitModalBtn.textContent = 'Сохранить карточку';
+      addCardForm.reset();
+      descEditor.innerHTML = '';
+
+      if (currentChapter !== 'all') {
+        document.getElementById('cardChapter').value = currentChapter;
+      }
+      if (currentSection !== 'all') {
+        document.getElementById('cardSection').value = currentSection;
+      }
+      modalOverlay.classList.add('open');
+    });
+
+    closeModalBtn.addEventListener('click', () => modalOverlay.classList.remove('open'));
+
+    // Клики по карточкам: закрепление, редактирование, удаление, копирование кода
+    grid.addEventListener('click', (e) => {
+      // Закрепление карточки
+      const pinBtn = e.target.closest('.pin-card-btn');
+      if (pinBtn) {
+        const id = Number(pinBtn.dataset.id);
+        const card = cardsData.find(c => c.id === id);
+        if (!card) return;
+
+        card.pinned = !card.pinned;
+        saveToStorage();
+        renderCards();
+        return;
+      }
+
+      // Редактирование карточки
+      const editBtn = e.target.closest('.edit-card-btn');
+      if (editBtn) {
+        const id = Number(editBtn.dataset.id);
+        const card = cardsData.find(c => c.id === id);
+        if (!card) return;
+
+        editingCardId = card.id;
+        modalTitle.textContent = 'Редактировать карточку';
+        submitModalBtn.textContent = 'Сохранить изменения';
+
+        document.getElementById('cardChapter').value = card.chapter;
+        document.getElementById('cardSection').value = card.section;
+        document.getElementById('cardTitle').value = card.title;
+        document.getElementById('cardCode').value = card.rawCode;
+        descEditor.innerHTML = card.desc;
+
+        modalOverlay.classList.add('open');
+        return;
+      }
+
+      // Удаление карточки
+      const delBtn = e.target.closest('.delete-card-btn');
+      if (delBtn) {
+        const id = Number(delBtn.dataset.id);
+        cardsData = cardsData.filter(c => c.id !== id);
+        saveToStorage();
+        renderSidebar();
+        renderTopTabs();
+        renderCards();
+        return;
+      }
+
+      // Копирование кода
+      const codeBox = e.target.closest('.code-box');
+      if (codeBox) {
+        navigator.clipboard.writeText(codeBox.dataset.code);
+        codeBox.classList.add('copied');
+        setTimeout(() => codeBox.classList.remove('copied'), 1200);
+      }
+    });
+
+    // Форматирование текста маркерами и цветом
+    function applyFormatting(className, inlineStyle = '') {
+      const sel = window.getSelection();
+      if (!sel.rangeCount || sel.isCollapsed) return;
+
+      const range = sel.getRangeAt(0);
+      if (!descEditor.contains(range.commonAncestorContainer)) return;
+
+      const span = document.createElement('span');
+      if (className) span.className = className;
+      if (inlineStyle) span.style.cssText = inlineStyle;
+
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+      sel.removeAllRanges();
+    }
+
+    document.querySelectorAll('.fmt-btn[data-action="class"]').forEach(btn => {
+      btn.addEventListener('click', () => applyFormatting(btn.dataset.val));
+    });
+
+    document.getElementById('customBgColor').addEventListener('input', (e) => {
+      applyFormatting('', `background: ${e.target.value}; color: #fff; padding: 1px 6px; border-radius: 4px;`);
+    });
+
+    document.getElementById('customTextColor').addEventListener('input', (e) => {
+      applyFormatting('', `color: ${e.target.value}; font-weight: 600;`);
+    });
+
+    document.getElementById('clearFmtBtn').addEventListener('click', () => {
+      descEditor.innerHTML = descEditor.textContent;
+    });
+
+    // Сохранение (новой или отредактированной) карточки
+    addCardForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const chapter = document.getElementById('cardChapter').value.trim();
+      const section = document.getElementById('cardSection').value.trim();
+      const title = document.getElementById('cardTitle').value.trim();
+      const rawCode = document.getElementById('cardCode').value.trim();
+      const desc = descEditor.innerHTML.trim() || 'Без описания';
+
+      if (editingCardId !== null) {
+        const idx = cardsData.findIndex(c => c.id === editingCardId);
+        if (idx !== -1) {
+          cardsData[idx] = {
+            ...cardsData[idx],
+            chapter,
+            section,
+            title,
+            category: `${chapter} • ${section}`,
+            rawCode,
+            desc
+          };
+        }
+      } else {
+        cardsData.unshift({
+          id: Date.now(),
+          pinned: false,
+          chapter,
+          section,
+          title,
+          category: `${chapter} • ${section}`,
+          rawCode,
+          desc
+        });
+      }
+
+      saveToStorage();
+      editingCardId = null;
+      addCardForm.reset();
+      descEditor.innerHTML = '';
+      modalOverlay.classList.remove('open');
+
+      renderSidebar();
+      renderTopTabs();
+      renderCards();
+    });
+
+    // ================= ЭКСПОРТ, ИМПОРТ И СБРОС БАЗЫ =================
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(cardsData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'my_knowledge_base.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    const importBtn = document.getElementById('importBtn');
+    const importFileInput = document.getElementById('importFileInput');
+
+    importBtn.addEventListener('click', () => importFileInput.click());
+
+    importFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (!Array.isArray(imported)) {
+            alert('Ошибка: JSON-файл должен содержать массив карточек.');
+            return;
+          }
+
+          cardsData = imported.map((item, index) => ({
+            ...item,
+            id: item.id || (Date.now() + index),
+            pinned: Boolean(item.pinned)
+          }));
+
+          saveToStorage();
+          currentChapter = 'all';
+          currentSection = 'all';
+          currentChapterBadge.textContent = 'Глава: Все главы';
+
+          renderSidebar();
+          renderTopTabs();
+          renderCards();
+          toggleMenu();
+        } catch (err) {
+          alert('Не удалось прочитать JSON-файл. Проверьте его структуру.');
+        } finally {
+          importFileInput.value = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (confirm('Сбросить все изменения к начальным карточкам?')) {
+        cardsData = [...defaultCards];
+        saveToStorage();
+        renderSidebar();
+        renderTopTabs();
+        renderCards();
+      }
+    });
+
+    // Первый запуск
+    renderSidebar();
+    renderTopTabs();
+    renderCards();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вход • База знаний</title>
+<style>
+  :root {
+    --bg-gradient: linear-gradient(135deg, #070b19 0%, #0f1e3d 50%, #050811 100%);
+    --card-bg: rgba(18, 27, 48, 0.85);
+    --card-pinned-bg: rgba(28, 25, 54, 0.92);
+    --sidebar-bg: rgba(10, 15, 30, 0.96);
+    --card-border: rgba(219, 39, 119, 0.3);
+    --pink-shadow: 0 14px 30px -5px rgba(157, 23, 77, 0.55), 0 4px 15px -2px rgba(219, 39, 119, 0.3);
+    --pink-shadow-hover: 0 20px 40px -5px rgba(190, 24, 93, 0.75), 0 8px 20px -2px rgba(236, 72, 153, 0.45);
+    --pinned-shadow: 0 14px 32px -4px rgba(245, 158, 11, 0.35), 0 6px 20px -2px rgba(219, 39, 119, 0.45);
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-main);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    padding: 40px 24px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    transition: color 0.3s ease;
+  }
+
+  body.locked { overflow: hidden; }
+  body.locked #appRoot { visibility: hidden; }
+
+  /* ================= ЭКРАН ВХОДА ================= */
+  .login-screen {
+    position: fixed; inset: 0; z-index: 5000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  .login-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .login-box {
+    width: 100%; max-width: 420px;
+    background: rgba(13, 21, 39, 0.92);
+    border: 1px solid rgba(0, 220, 255, 0.5);
+    border-radius: 18px;
+    padding: 34px 28px 28px;
+    box-shadow: 0 20px 50px -8px rgba(0, 150, 220, 0.55),
+                0 8px 24px -4px rgba(0, 220, 255, 0.35);
+    backdrop-filter: blur(12px);
+    display: flex; flex-direction: column; gap: 18px;
+    animation: loginFadeIn 0.4s ease;
+  }
+  @keyframes loginFadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-header { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; margin-bottom: 4px; }
+  .login-icon {
+    width: 62px; height: 62px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; border-radius: 50%;
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    box-shadow: 0 8px 24px rgba(0, 200, 255, 0.55);
+    margin-bottom: 6px;
+  }
+  .login-title { font-size: 1.35rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.3px; }
+  .login-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+
+  .login-group { display: flex; flex-direction: column; gap: 6px; }
+  .login-group label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.3px; }
+  .login-input {
+    background: #060913; border: 1px solid #1e293b; border-radius: 10px;
+    padding: 12px 14px; color: #f8fafc; font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit;
+  }
+  .login-input:focus { border-color: #00e5ff; box-shadow: 0 0 0 3px rgba(0, 220, 255, 0.18); }
+  .login-input.error {
+    border-color: #f43f5e; box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.18);
+    animation: shake 0.35s ease;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+
+  .login-error {
+    display: none; font-size: 0.82rem; color: #fca5a5;
+    background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35);
+    border-radius: 8px; padding: 9px 12px; text-align: center; margin-top: -4px;
+  }
+  .login-error.visible { display: block; }
+
+  .login-submit {
+    margin-top: 4px;
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    border: 1px solid #00e5ff; color: #fff;
+    padding: 13px; border-radius: 10px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.4px;
+    transition: transform 0.15s, box-shadow 0.2s;
+  }
+  .login-submit:hover { box-shadow: 0 8px 24px rgba(0, 200, 255, 0.6); transform: translateY(-1px); }
+  .login-submit:active { transform: translateY(0); }
+
+  .login-hint { text-align: center; font-size: 0.72rem; color: #475569; margin-top: 4px; letter-spacing: 0.3px; }
+
+  /* ================= ВЕРХНИЕ ПЛАВАЮЩИЕ КНОПКИ ================= */
+  .burger-btn, .add-card-btn, .theme-toggle-btn {
+    position: fixed; top: 24px; z-index: 1001;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(72, 192, 236, 0.5);
+    color: var(--text-main);
+    padding: 10px 16px; border-radius: 10px; cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.95rem; font-weight: 600;
+    box-shadow: 0 4px 20px rgba(19, 133, 154, 0.5);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+  .burger-btn { left: 24px; }
+  .add-card-btn {
+    right: 24px;
+    background: linear-gradient(135deg, #184fbe, #6d28d9);
+    border-color: #78f472; color: #fff;
+  }
+  .burger-btn:hover, .add-card-btn:hover, .theme-toggle-btn:hover {
+    border-color: #72daf4; transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(72, 198, 236, 0.75);
+  }
+  .burger-icon { display: flex; flex-direction: column; gap: 4px; width: 18px; }
+  .burger-icon span { display: block; height: 2px; width: 100%; background: #f472b6; border-radius: 2px; transition: background 0.3s; }
+
+  .theme-toggle-btn { top: 82px; left: 24px; padding: 8px 14px; font-size: 0.88rem; }
+  .theme-toggle-btn .theme-emoji { font-size: 1.15rem; line-height: 1; }
+  .theme-toggle-btn .theme-label { font-size: 0.82rem; letter-spacing: 0.3px; }
+
+  .logout-btn {
+    position: fixed; top: 82px; right: 24px; z-index: 1001;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(244, 63, 94, 0.45);
+    color: #fca5a5;
+    padding: 8px 14px; border-radius: 10px; cursor: pointer;
+    font-size: 0.85rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 4px 18px rgba(244, 63, 94, 0.3);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+  .logout-btn:hover {
+    color: #fff; border-color: #f43f5e;
+    background: rgba(244, 63, 94, 0.18);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(244, 63, 94, 0.55);
+  }
+
+  /* ================= БОКОВОЕ МЕНЮ (ГЛАВЫ) ================= */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(3, 6, 14, 0.65);
+    backdrop-filter: blur(4px); z-index: 999;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .overlay.open { opacity: 1; visibility: visible; }
+
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh; width: 290px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid rgba(236, 72, 153, 0.35);
+    box-shadow: 10px 0 35px rgba(157, 23, 77, 0.45);
+    z-index: 1000; padding: 85px 20px 24px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+    display: flex; flex-direction: column; justify-content: space-between;
+    overflow-y: auto;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-nav { display: flex; flex-direction: column; gap: 8px; }
+  .sidebar-title {
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--text-muted); margin: 10px 8px 4px;
+  }
+
+  .chapter-btn {
+    background: rgba(18, 27, 48, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: var(--text-main);
+    padding: 11px 16px; border-radius: 10px;
+    font-size: 0.95rem; font-weight: 500; text-align: left;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .chapter-btn:hover {
+    border-color: rgba(244, 114, 182, 0.5);
+    background: rgba(30, 41, 69, 0.9);
+    transform: translateX(4px);
+  }
+  .chapter-btn.active {
+    background: linear-gradient(135deg, #be185d, #4f46e5);
+    border-color: #f472b6; color: #fff; font-weight: 600;
+    box-shadow: 0 6px 18px rgba(219, 39, 119, 0.45);
+  }
+
+  .chapter-row { display: flex; align-items: center; gap: 6px; }
+  .chapter-row .chapter-btn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chapter-row .chapter-btn:hover { transform: none; }
+
+  .chapter-del-btn {
+    flex-shrink: 0; width: 36px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    color: #64748b; border-radius: 10px;
+    font-size: 1.05rem; line-height: 1; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .chapter-del-btn:hover {
+    color: #f43f5e; border-color: rgba(244, 63, 94, 0.6);
+    background: rgba(244, 63, 94, 0.14);
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
+  }
+
+  .chapter-add-row { display: flex; gap: 6px; margin-top: 4px; }
+  .add-chapter-btn {
+    flex: 1;
+    background: rgba(18, 27, 48, 0.55);
+    border: 1px dashed rgba(236, 72, 153, 0.45);
+    color: #f472b6; padding: 10px 16px; border-radius: 10px;
+    font-size: 0.9rem; font-weight: 600; text-align: left;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .add-chapter-btn:hover {
+    background: rgba(219, 39, 119, 0.15);
+    border-color: #f472b6; color: #fff;
+    box-shadow: 0 6px 18px rgba(219, 39, 119, 0.3);
+  }
+  .chapter-input {
+    flex: 1; min-width: 0;
+    background: #060913; border: 1px solid #ec4899;
+    border-radius: 10px; padding: 10px 12px;
+    color: #f8fafc; font-size: 0.9rem; outline: none;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+  }
+  .chapter-ok-btn {
+    flex-shrink: 0; width: 42px;
+    background: linear-gradient(135deg, #be185d, #7e22ce);
+    border: 1px solid #f472b6; color: #fff;
+    border-radius: 10px; font-size: 1rem; cursor: pointer;
+    transition: 0.2s;
+  }
+  .chapter-ok-btn:hover { box-shadow: 0 6px 18px rgba(236, 72, 153, 0.6); }
+
+  .sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .util-btn {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: var(--text-muted); padding: 9px 12px; border-radius: 8px;
+    font-size: 0.82rem; cursor: pointer; transition: 0.2s; text-align: left;
+  }
+  .util-btn:hover { color: #fff; border-color: #f472b6; background: rgba(30, 41, 69, 0.7); }
+
+  /* ================= ШАПКА И ВКЛАДКИ ================= */
+  header { max-width: 1200px; margin: 0 auto 36px; text-align: center; }
+  .current-chapter-label {
+    display: inline-block; font-size: 0.85rem; color: #f472b6;
+    background: rgba(219, 39, 119, 0.15);
+    border: 1px solid rgba(236, 72, 153, 0.35);
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 10px;
+    transition: color 0.3s, background 0.3s, border-color 0.3s;
+  }
+  h1 {
+    font-size: 2.2rem; font-weight: 700; margin-bottom: 8px;
+    background: linear-gradient(90deg, #60a5fa, #f472b6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--text-muted); font-size: 0.95rem; }
+
+  .controls { margin-top: 24px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .tab-btn {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(219, 39, 119, 0.35);
+    color: var(--text-main); padding: 9px 20px; border-radius: 10px;
+    font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+  }
+  .tab-btn:hover { border-color: #f472b6; transform: translateY(-2px); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #be185d, #7e22ce);
+    border-color: #f472b6; color: #ffffff;
+    box-shadow: 0 6px 20px rgba(219, 39, 119, 0.6);
+  }
+  .search-box {
+    width: 100%; max-width: 480px; padding: 12px 18px; border-radius: 10px;
+    border: 1px solid rgba(219, 39, 119, 0.4);
+    background: rgba(6, 9, 19, 0.85); color: #f8fafc; font-size: 1rem; outline: none;
+    box-shadow: 0 4px 15px rgba(157, 23, 77, 0.25);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-box:focus { border-color: #ec4899; box-shadow: 0 4px 20px rgba(236, 72, 153, 0.5); }
+
+  /* ================= СЕТКА И КАРТОЧКИ ================= */
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(387px, 1fr));
+    gap: 28px; max-width: 1200px; margin: 0 auto;
+  }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 22px; box-shadow: var(--pink-shadow);
+    backdrop-filter: blur(10px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    display: flex; flex-direction: column; gap: 14px; position: relative;
+  }
+  .card:hover {
+    transform: translateY(-7px);
+    box-shadow: var(--pink-shadow-hover);
+    border-color: rgba(236, 72, 153, 0.65);
+  }
+  .card.pinned { background: var(--card-pinned-bg); border-color: rgba(251, 191, 36, 0.65); box-shadow: var(--pinned-shadow); }
+  .card.pinned:hover { border-color: #fbbf24; }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .card-title { font-size: 1.12rem; font-weight: 600; color: #f8fafc; }
+  .header-right { display: flex; align-items: center; gap: 5px; }
+  .badge {
+    font-size: 0.72rem; padding: 3px 10px; border-radius: 20px;
+    background: rgba(157, 23, 77, 0.35);
+    border: 1px solid rgba(236, 72, 153, 0.4);
+    color: #fbcfe8; white-space: nowrap;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
+  }
+  .pin-card-btn, .edit-card-btn, .delete-card-btn, .desc-panel-btn {
+    background: transparent; border: none; color: #64748b;
+    font-size: 1.08rem; cursor: pointer; padding: 2px 4px; line-height: 1;
+    transition: color 0.2s, transform 0.15s;
+  }
+  .pin-card-btn:hover { color: #fbbf24; transform: scale(1.18); }
+  .pin-card-btn.active { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.7); }
+  .edit-card-btn:hover { color: #38bdf8; transform: scale(1.15); }
+  .delete-card-btn:hover { color: #f43f5e; transform: scale(1.15); }
+  .desc-panel-btn:hover { color: #f472b6; transform: scale(1.15); }
+  body.male-theme .desc-panel-btn:hover { color: #00e5ff; }
+
+  .code-box {
+    background: #060913; border: 1px solid #1e293b; border-radius: 8px;
+    padding: 12px 14px; font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 0.88rem; overflow-x: auto; cursor: pointer; position: relative;
+    transition: border-color 0.2s;
+  }
+  .code-box:hover { border-color: #ec4899; }
+  .code-box::after {
+    content: 'Копировать'; position: absolute; top: 6px; right: 8px;
+    font-size: 0.7rem; background: rgba(219, 39, 119, 0.2); color: #f472b6;
+    padding: 2px 6px; border-radius: 4px; opacity: 0; transition: opacity 0.2s, background 0.3s, color 0.3s;
+  }
+  .code-box:hover::after { opacity: 1; }
+  .code-box.copied::after {
+    content: 'Скопировано!'; background: rgba(16, 185, 129, 0.25);
+    color: #34d399; opacity: 1;
+  }
+  .syn-obj { color: #38bdf8; }
+  .syn-method { color: #f472b6; }
+  .syn-str { color: #a3e635; }
+  .syn-kw { color: #c084fc; }
+
+  .card-desc { font-size: 0.92rem; color: #cbd5e1; word-break: break-word; }
+
+  .m-pink { background: rgba(219, 39, 119, 0.38); color: #fce7f3; padding: 1px 6px; border-radius: 4px; }
+  .m-blue { background: rgba(37, 99, 235, 0.42); color: #dbeafe; padding: 1px 6px; border-radius: 4px; }
+  .m-yellow { background: rgba(202, 138, 4, 0.38); color: #fef08a; padding: 1px 6px; border-radius: 4px; }
+  .t-pink { color: #f472b6; font-weight: 600; }
+  .t-cyan { color: #38bdf8; font-weight: 600; }
+  .t-green { color: #4ade80; font-weight: 600; }
+
+  /* ================= БОКОВАЯ ПАНЕЛЬ ОПИСАНИЯ ================= */
+  .drawer-overlay {
+    position: fixed; inset: 0; background: rgba(3, 6, 14, 0.55);
+    backdrop-filter: blur(4px); z-index: 1500;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .drawer-overlay.open { opacity: 1; visibility: visible; }
+
+  .drawer {
+    position: fixed; top: 0; right: 0; height: 100vh; width: 500px;
+    max-width: 100vw;
+    background: rgba(13, 21, 39, 0.98);
+    border-left: 1px solid rgba(236, 72, 153, 0.4);
+    box-shadow: -12px 0 40px rgba(157, 23, 77, 0.5);
+    z-index: 1501;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    padding: 22px 26px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .drawer-header h3 {
+    font-size: 1.1rem; color: #f8fafc; font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .drawer-header .drawer-sub {
+    display: block; font-size: 0.75rem; color: var(--text-muted);
+    font-weight: 400; margin-top: 3px; letter-spacing: 0.3px;
+  }
+  .drawer-close {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 1.6rem; line-height: 1; cursor: pointer;
+    padding: 0 4px; transition: color 0.2s;
+    flex-shrink: 0;
+  }
+  .drawer-close:hover { color: #f43f5e; }
+
+  .drawer-toolbar {
+    padding: 14px 26px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(6, 9, 19, 0.5);
+  }
+  .drawer-color-wrap {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; color: #cbd5e1;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 6px 10px; border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .drawer-color-wrap:hover { border-color: #ec4899; }
+  body.male-theme .drawer-color-wrap:hover { border-color: #00e5ff; }
+  .drawer-color-wrap input[type="color"] {
+    border: none; width: 24px; height: 24px;
+    background: none; cursor: pointer; padding: 0;
+  }
+  .drawer-clear-btn {
+    margin-left: auto;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: var(--text-muted);
+    padding: 6px 12px; border-radius: 8px;
+    font-size: 0.78rem; font-weight: 500; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .drawer-clear-btn:hover {
+    color: #fff; border-color: #f472b6;
+    background: rgba(30, 41, 69, 0.9);
+  }
+  body.male-theme .drawer-clear-btn:hover { border-color: #00e5ff; }
+
+  .drawer-editor-wrap {
+    flex: 1; overflow-y: auto;
+    padding: 20px 26px;
+  }
+  .drawer-editor {
+    min-height: 240px;
+    background: #060913;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 16px;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    word-break: break-word;
+  }
+  .drawer-editor:focus {
+    border-color: #ec4899;
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+  }
+  body.male-theme .drawer-editor:focus {
+    border-color: #00e5ff;
+    box-shadow: 0 0 0 3px rgba(0, 220, 255, 0.15);
+  }
+  .drawer-editor:empty::before {
+    content: 'Напишите описание карточки. Выделите текст и выберите цвет в панели выше...';
+    color: #475569;
+  }
+
+  .drawer-hint {
+    font-size: 0.72rem; color: #475569;
+    margin-top: 10px; text-align: center; letter-spacing: 0.3px;
+  }
+
+  .drawer-footer {
+    padding: 16px 26px 22px;
+    display: flex; gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(6, 9, 19, 0.4);
+  }
+  .drawer-footer button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+  }
+  .drawer-cancel-btn {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    color: #cbd5e1;
+  }
+  .drawer-cancel-btn:hover {
+    color: #fff;
+    border-color: rgba(148, 163, 184, 0.55);
+    background: rgba(30, 41, 69, 0.9);
+  }
+  .drawer-save-btn {
+    background: linear-gradient(135deg, #be185d, #7e22ce);
+    border: 1px solid #f472b6;
+    color: #fff;
+  }
+  .drawer-save-btn:hover {
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
+  }
+  body.male-theme .drawer-save-btn {
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    border-color: #00e5ff;
+  }
+  body.male-theme .drawer-save-btn:hover {
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.6);
+  }
+
+  /* ================= МОДАЛЬНОЕ ОКНО ================= */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(3, 6, 14, 0.78);
+    backdrop-filter: blur(6px); z-index: 2000;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; visibility: hidden; transition: 0.25s ease;
+  }
+  .modal-overlay.open { opacity: 1; visibility: visible; }
+  .modal {
+    background: #0d1527; border: 1px solid rgba(236, 72, 153, 0.45);
+    box-shadow: var(--pink-shadow-hover); border-radius: 16px;
+    width: 100%; max-width: 580px; padding: 26px;
+    display: flex; flex-direction: column; gap: 16px;
+    max-height: 92vh; overflow-y: auto;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h2 { font-size: 1.3rem; color: #f8fafc; }
+  .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 0.84rem; color: var(--text-muted); font-weight: 500; }
+  .form-input, .form-textarea {
+    background: #060913; border: 1px solid #1e293b; border-radius: 8px;
+    padding: 10px 12px; color: #f8fafc; font-size: 0.92rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-textarea:focus, .wysiwyg-editor:focus { border-color: #ec4899; }
+  .form-textarea { font-family: 'Fira Code', monospace; min-height: 85px; resize: vertical; }
+  .format-toolbar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    background: rgba(15, 23, 42, 0.9); border: 1px solid #1e293b;
+    padding: 8px; border-radius: 8px;
+  }
+  .toolbar-label { font-size: 0.75rem; color: var(--text-muted); margin-right: 2px; }
+  .fmt-btn {
+    border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 6px;
+    padding: 4px 8px; font-size: 0.78rem; cursor: pointer;
+    font-weight: 600; transition: transform 0.15s;
+  }
+  .fmt-btn:hover { transform: scale(1.06); }
+  .color-picker-wrap {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem;
+    color: #cbd5e1; background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px; border-radius: 6px; cursor: pointer;
+  }
+  .color-picker-wrap input[type="color"] { border: none; width: 20px; height: 20px; background: none; cursor: pointer; }
+  .wysiwyg-editor {
+    background: #060913; border: 1px solid #1e293b; border-radius: 8px;
+    padding: 12px; min-height: 90px; color: #cbd5e1;
+    font-size: 0.92rem; outline: none;
+  }
+  .wysiwyg-editor:empty::before { content: attr(data-placeholder); color: #475569; }
+  .submit-btn {
+    background: linear-gradient(135deg, #be185d, #7e22ce);
+    border: 1px solid #f472b6; color: #fff; padding: 12px; border-radius: 10px;
+    font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+  }
+  .submit-btn:hover { box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6); }
+
+  /* ============================================================
+     МУЖСКАЯ ТЕМА
+     ============================================================ */
+  body.male-theme {
+    --card-border: rgba(0, 200, 255, 0.35);
+    --pink-shadow: 0 14px 30px -5px rgba(0, 100, 180, 0.55), 0 4px 15px -2px rgba(0, 200, 255, 0.3);
+    --pink-shadow-hover: 0 20px 40px -5px rgba(0, 150, 220, 0.75), 0 8px 20px -2px rgba(0, 220, 255, 0.5);
+  }
+
+  body.male-theme .burger-icon span { background: #00e5ff; }
+
+  body.male-theme .sidebar {
+    border-right-color: rgba(0, 220, 255, 0.4);
+    box-shadow: 10px 0 35px rgba(0, 100, 180, 0.5);
+  }
+
+  body.male-theme .chapter-btn:hover {
+    border-color: rgba(0, 220, 255, 0.55);
+    background: rgba(15, 40, 70, 0.9);
+  }
+  body.male-theme .chapter-btn.active {
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    border-color: #00e5ff;
+    box-shadow: 0 6px 18px rgba(0, 200, 255, 0.5);
+  }
+
+  body.male-theme .add-chapter-btn {
+    border-color: rgba(0, 220, 255, 0.5);
+    color: #00e5ff;
+  }
+  body.male-theme .add-chapter-btn:hover {
+    background: rgba(0, 150, 220, 0.15);
+    border-color: #00e5ff;
+    box-shadow: 0 6px 18px rgba(0, 200, 255, 0.35);
+  }
+  body.male-theme .chapter-input {
+    border-color: #00e5ff;
+    box-shadow: 0 4px 16px rgba(0, 200, 255, 0.4);
+  }
+  body.male-theme .chapter-ok-btn {
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    border-color: #00e5ff;
+  }
+  body.male-theme .chapter-ok-btn:hover {
+    box-shadow: 0 6px 18px rgba(0, 200, 255, 0.6);
+  }
+
+  body.male-theme .util-btn:hover { border-color: #00e5ff; }
+
+  body.male-theme .current-chapter-label {
+    color: #00e5ff;
+    background: rgba(0, 150, 220, 0.18);
+    border-color: rgba(0, 220, 255, 0.4);
+  }
+
+  body.male-theme h1 {
+    background: linear-gradient(90deg, #22d3ee, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  body.male-theme .tab-btn { border-color: rgba(0, 200, 255, 0.4); }
+  body.male-theme .tab-btn:hover { border-color: #00e5ff; }
+  body.male-theme .tab-btn.active {
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    border-color: #00e5ff;
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.6);
+  }
+
+  body.male-theme .search-box {
+    border-color: rgba(0, 200, 255, 0.45);
+    box-shadow: 0 4px 15px rgba(0, 100, 180, 0.3);
+  }
+  body.male-theme .search-box:focus {
+    border-color: #00e5ff;
+    box-shadow: 0 4px 20px rgba(0, 220, 255, 0.5);
+  }
+
+  body.male-theme .card:hover { border-color: rgba(0, 220, 255, 0.65); }
+
+  body.male-theme .badge {
+    background: rgba(0, 120, 180, 0.35);
+    border-color: rgba(0, 200, 255, 0.4);
+    color: #a5f3fc;
+  }
+
+  body.male-theme .code-box:hover { border-color: #00e5ff; }
+  body.male-theme .code-box::after {
+    background: rgba(0, 150, 220, 0.25);
+    color: #00e5ff;
+  }
+
+  body.male-theme .modal { border-color: rgba(0, 220, 255, 0.5); }
+  body.male-theme .form-input:focus,
+  body.male-theme .form-textarea:focus,
+  body.male-theme .wysiwyg-editor:focus { border-color: #00e5ff; }
+  body.male-theme .submit-btn {
+    background: linear-gradient(135deg, #06b6d4, #6366f1);
+    border-color: #00e5ff;
+  }
+  body.male-theme .submit-btn:hover {
+    box-shadow: 0 6px 20px rgba(0, 200, 255, 0.6);
+  }
+
+  body.male-theme .drawer {
+    border-left-color: rgba(0, 220, 255, 0.45);
+    box-shadow: -12px 0 40px rgba(0, 100, 180, 0.55);
+  }
+  body.male-theme .login-box {
+    border-color: rgba(0, 220, 255, 0.5);
+    box-shadow: 0 20px 50px -8px rgba(0, 150, 220, 0.55),
+                0 8px 24px -4px rgba(0, 220, 255, 0.35);
+  }
+</style>
+</head>
+<body class="locked">
+
+<!-- ================= ЭКРАН ВХОДА ================= -->
+<div class="login-screen" id="loginScreen">
+  <form class="login-box" id="loginForm" autocomplete="off">
+    <div class="login-header">
+      <div class="login-icon">🔐</div>
+      <div class="login-title">Вход в базу знаний</div>
+      <div class="login-subtitle">Введите логин и пароль для доступа</div>
+    </div>
+
+    <div class="login-group">
+      <label for="loginUser">Логин</label>
+      <input type="text" id="loginUser" class="login-input" placeholder="Введите логин..." autocomplete="username" spellcheck="false">
+    </div>
+
+    <div class="login-group">
+      <label for="loginPass">Пароль</label>
+      <input type="password" id="loginPass" class="login-input" placeholder="Введите пароль..." autocomplete="current-password">
+    </div>
+
+    <div class="login-error" id="loginError">Неверный логин или пароль</div>
+
+    <button type="submit" class="login-submit">Войти</button>
+
+    <div class="login-hint">Доступ только для авторизованных пользователей</div>
+  </form>
+</div>
+
+<!-- ================= ПРИЛОЖЕНИЕ ================= -->
+<div id="appRoot">
+
+  <button class="burger-btn" id="burgerBtn">
+    <div class="burger-icon"><span></span><span></span><span></span></div>
+    <span>Главы</span>
+  </button>
+
+  <button class="theme-toggle-btn" id="themeToggleBtn" title="Переключить тему">
+    <span class="theme-emoji" id="themeEmoji">👩</span>
+    <span class="theme-label" id="themeLabel">Женская</span>
+  </button>
+
+  <button class="logout-btn" id="logoutBtn" title="Выйти из аккаунта">
+    <span>⎋</span>
+    <span>Выйти</span>
+  </button>
+
+  <button class="add-card-btn" id="openModalBtn">+ Карточка</button>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-nav" id="sidebarNav"></div>
+    <div class="sidebar-footer">
+      <button class="util-btn" id="exportBtn">⬇ Скачать базу в файл (.json)</button>
+      <button class="util-btn" id="importBtn">⬆ Загрузить базу из файла (.json)</button>
+      <input type="file" id="importFileInput" accept=".json,application/json" style="display: none;">
+      <button class="util-btn" id="resetBtn">↺ Сбросить к стандартным</button>
+    </div>
+  </aside>
+
+  <!-- ================= БОКОВАЯ ПАНЕЛЬ ОПИСАНИЯ ================= -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer" id="descDrawer">
+    <div class="drawer-header">
+      <div>
+        <h3 id="drawerTitle">Описание</h3>
+        <span class="drawer-sub">Редактирование описания карточки</span>
+      </div>
+      <button class="drawer-close" id="drawerCloseBtn" title="Закрыть">&times;</button>
+    </div>
+
+    <div class="drawer-toolbar">
+      <label class="drawer-color-wrap" title="Цвет текста выделенного фрагмента">
+        <span>Цвет текста</span>
+        <input type="color" id="drawerTextColor" value="#f472b6">
+      </label>
+      <label class="drawer-color-wrap" title="Цвет маркера (выделения) выделенного фрагмента">
+        <span>Цвет маркера</span>
+        <input type="color" id="drawerBgColor" value="#9d174d">
+      </label>
+      <button type="button" class="drawer-clear-btn" id="drawerClearFmt">Очистить формат</button>
+    </div>
+
+    <div class="drawer-editor-wrap">
+      <div class="drawer-editor" id="drawerEditor" contenteditable="true"></div>
+      <div class="drawer-hint">Выделите текст мышкой и выберите цвет в панели выше</div>
+    </div>
+
+    <div class="drawer-footer">
+      <button type="button" class="drawer-cancel-btn" id="drawerCancelBtn">Отмена</button>
+      <button type="button" class="drawer-save-btn" id="drawerSaveBtn">Сохранить</button>
+    </div>
+  </aside>
+
+  <!-- ================= МОДАЛЬНОЕ ОКНО ================= -->
+  <div class="modal-overlay" id="modalOverlay">
+    <form class="modal" id="addCardForm">
+      <div class="modal-header">
+        <h2 id="modalTitle">Новая карточка</h2>
+        <button type="button" class="close-modal" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Глава (в боковом меню)</label>
+          <input type="text" id="cardChapter" list="chaptersList" class="form-input" placeholder="Например: Skillbox" required>
+          <datalist id="chaptersList"></datalist>
+        </div>
+        <div class="form-group">
+          <label>Раздел (верхняя вкладка)</label>
+          <input type="text" id="cardSection" list="sectionsList" class="form-input" placeholder="Например: DOM" required>
+          <datalist id="sectionsList"></datalist>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Заголовок карточки</label>
+        <input type="text" id="cardTitle" class="form-input" placeholder="Например: Поиск элемента по классу" required>
+      </div>
+      <div class="form-group">
+        <label>Код или команда</label>
+        <textarea id="cardCode" class="form-textarea" placeholder="const el = document.querySelector('.box');" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Описание (выделите слово мышкой и нажмите кнопку цвета)</label>
+        <div class="format-toolbar">
+          <span class="toolbar-label">Маркер:</span>
+          <button type="button" class="fmt-btn m-pink" data-action="class" data-val="m-pink">Розовый</button>
+          <button type="button" class="fmt-btn m-blue" data-action="class" data-val="m-blue">Синий</button>
+          <button type="button" class="fmt-btn m-yellow" data-action="class" data-val="m-yellow">Желтый</button>
+          <label class="color-picker-wrap" title="Любой цвет маркера">
+            <span>Фон</span>
+            <input type="color" id="customBgColor" value="#9d174d">
+          </label>
+          <span class="toolbar-label" style="margin-left: 6px;">Текст:</span>
+          <button type="button" class="fmt-btn t-pink" style="background:#0f172a" data-action="class" data-val="t-pink">А</button>
+          <button type="button" class="fmt-btn t-cyan" style="background:#0f172a" data-action="class" data-val="t-cyan">А</button>
+          <button type="button" class="fmt-btn t-green" style="background:#0f172a" data-action="class" data-val="t-green">А</button>
+          <label class="color-picker-wrap" title="Любой цвет текста">
+            <span>Цвет</span>
+            <input type="color" id="customTextColor" value="#f472b6">
+          </label>
+          <button type="button" class="fmt-btn" style="background:#1e293b; color:#cbd5e1;" id="clearFmtBtn">Очистить</button>
+        </div>
+        <div id="descEditor" class="wysiwyg-editor" contenteditable="true" data-placeholder="Напишите пояснение. Выделите важное слово и покрасьте его кнопками выше..."></div>
+      </div>
+      <button type="submit" class="submit-btn" id="submitModalBtn">Сохранить карточку</button>
+    </form>
+  </div>
+
+  <header>
+    <div class="current-chapter-label" id="currentChapterBadge">Глава: Все главы</div>
+    <h1>Интерактивная база знаний</h1>
+    <p>Нажмите на блок с кодом, чтобы скопировать команду</p>
+    <div class="controls">
+      <div class="tabs" id="tabsContainer"></div>
+      <input type="text" id="searchInput" class="search-box" placeholder="Поиск по командам и описанию...">
+    </div>
+  </header>
+
+  <main class="grid" id="cardsGrid"></main>
+
+</div>
+
+<script>
+/* ============================================================
+   ЛОГИН И ПАРОЛЬ
+   ============================================================ */
+const AUTH_LOGIN    = 'astra_root';
+const AUTH_PASSWORD = '8TS^}XQ4q=iAteTE;[9y';
+const AUTH_KEY      = 'dev_knowledge_auth_v1';
+
+const loginScreen = document.getElementById('loginScreen');
+const loginForm   = document.getElementById('loginForm');
+const loginUser   = document.getElementById('loginUser');
+const loginPass   = document.getElementById('loginPass');
+const loginError  = document.getElementById('loginError');
+
+function isAuthorized() {
+  return sessionStorage.getItem(AUTH_KEY) === 'ok';
+}
+
+function unlockApp() {
+  loginScreen.classList.add('hidden');
+  document.body.classList.remove('locked');
+  loginUser.blur();
+  loginPass.blur();
+  loginUser.classList.remove('error');
+  loginPass.classList.remove('error');
+  loginError.classList.remove('visible');
+}
+
+function lockApp() {
+  document.body.classList.add('locked');
+  loginScreen.classList.remove('hidden');
+  loginForm.reset();
+  loginUser.focus();
+}
+
+if (isAuthorized()) {
+  unlockApp();
+} else {
+  loginUser.focus();
+}
+
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const user = loginUser.value.trim();
+  const pass = loginPass.value;
+  const userOk = user === AUTH_LOGIN;
+  const passOk = pass === AUTH_PASSWORD;
+
+  if (userOk && passOk) {
+    sessionStorage.setItem(AUTH_KEY, 'ok');
+    unlockApp();
+    return;
+  }
+
+  loginError.classList.add('visible');
+  loginUser.classList.add('error');
+  loginPass.classList.add('error');
+  setTimeout(() => {
+    loginUser.classList.remove('error');
+    loginPass.classList.remove('error');
+  }, 500);
+  loginPass.value = '';
+  loginPass.focus();
+});
+
+[loginUser, loginPass].forEach(el => {
+  el.addEventListener('input', () => {
+    loginError.classList.remove('visible');
+    loginUser.classList.remove('error');
+    loginPass.classList.remove('error');
+  });
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  if (!confirm('Выйти из аккаунта?')) return;
+  sessionStorage.removeItem(AUTH_KEY);
+  lockApp();
+});
+
+/* ============================================================
+   ХРАНИЛИЩЕ
+   ============================================================ */
+const STORAGE_KEY  = 'dev_knowledge_cards_v1';
+const CHAPTERS_KEY = 'dev_knowledge_chapters_v1';
+const THEME_KEY    = 'dev_knowledge_theme_v1';
+
+const defaultChapters = ['Skillbox', 'Моё обучение', 'Linux', 'Windows'];
+
+const defaultCards = [
+  { id: 1, pinned: true,  chapter: 'Skillbox',      section: 'DOM',            title: 'Поиск одного элемента',        category: 'Skillbox • DOM',       rawCode: `const el = document.querySelector('.class');`, desc: `Возвращает <span class="m-pink">первый найденный элемент</span> по CSS-селектору. Если не найден — вернет <span class="t-pink">null</span>.` },
+  { id: 2, pinned: false, chapter: 'Skillbox',      section: 'DOM',            title: 'Слушатель событий',            category: 'Skillbox • События',   rawCode: `btn.addEventListener('click', (e) => {\n e.preventDefault();\n});`, desc: `Вешает обработчик события. <span class="m-yellow">e.preventDefault()</span> отменяет стандартное поведение браузера.` },
+  { id: 3, pinned: false, chapter: 'Skillbox',      section: 'Массивы',        title: 'Фильтрация массива (filter)',  category: 'Skillbox • Массивы',   rawCode: `const active = users.filter(u => u.isOnline);`, desc: `Создает <span class="m-blue">новый массив</span> со всеми элементами, прошедшими проверку в функции.` },
+  { id: 4, pinned: false, chapter: 'Моё обучение',  section: 'Vue',            title: 'Реактивная переменная (ref)',  category: 'Обучение • Vue 3',     rawCode: `const count = ref(0);\ncount.value++;`, desc: `Создает реактивную ссылку. В скрипте меняем через <span class="m-pink">.value</span>, в шаблоне <span class="t-cyan">&lt;template&gt;</span> пишем без него.` },
+  { id: 5, pinned: false, chapter: 'Linux',         section: 'Терминал',       title: 'Права на выполнение скрипта',  category: 'Linux • Bash',         rawCode: `chmod +x script.sh`, desc: `Делает файл исполняемым, чтобы его можно было запустить напрямую через <span class="t-green">./script.sh</span>.` },
+  { id: 6, pinned: false, chapter: 'Linux',         section: 'Docker',         title: 'Просмотр логов контейнера',    category: 'Linux • Docker',       rawCode: `docker logs -f container_name`, desc: `Выводит логи работы контейнера. Флаг <span class="m-pink">-f</span> оставляет поток открытым в реальном времени.` },
+  { id: 7, pinned: false, chapter: 'Windows',       section: 'Сеть и Консоль', title: 'Очистка DNS-кэша и сеть',      category: 'Windows • CMD',        rawCode: `ipconfig /flushdns\nnetstat -ano | findstr :8080`, desc: `Первая команда сбрасывает DNS, вторая ищет <span class="m-blue">PID процесса</span>, который занял нужный порт.` }
+];
+
+let cardsData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultCards;
+
+let chapters = JSON.parse(localStorage.getItem(CHAPTERS_KEY));
+if (!Array.isArray(chapters) || chapters.length === 0) {
+  chapters = [...defaultChapters];
+}
+cardsData.forEach(c => {
+  if (c.chapter && !chapters.includes(c.chapter)) chapters.push(c.chapter);
+});
+
+let currentChapter = 'all';
+let currentSection = 'all';
+let editingCardId = null;
+
+const grid                = document.getElementById('cardsGrid');
+const searchInput         = document.getElementById('searchInput');
+const tabsContainer       = document.getElementById('tabsContainer');
+const sidebar             = document.getElementById('sidebar');
+const sidebarNav          = document.getElementById('sidebarNav');
+const burgerBtn           = document.getElementById('burgerBtn');
+const overlay             = document.getElementById('overlay');
+const currentChapterBadge = document.getElementById('currentChapterBadge');
+
+function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(cardsData)); }
+function saveChapters()  { localStorage.setItem(CHAPTERS_KEY, JSON.stringify(chapters)); }
+
+/* ============================================================
+   ПОДСВЕТКА СИНТАКСИСА
+   ============================================================ */
+function highlightCode(raw) {
+  let escaped = raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  return escaped
+    .replace(/('[^']*'|"[^"]*"|`[^`]*`)/g, '<span class="syn-str">$1</span>')
+    .replace(/\b(const|let|var|function|return|async|await|if|else|for|sudo|chmod)\b/g, '<span class="syn-kw">$1</span>')
+    .replace(/\b(document|window|console|el|btn|users|docker|ipconfig|netstat)\b/g, '<span class="syn-obj">$1</span>')
+    .replace(/\.([a-zA-Z0-9_]+)(?=\()/g, '.<span class="syn-method">$1</span>');
+}
+
+/* ============================================================
+   ТЕМА
+   ============================================================ */
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const themeEmoji     = document.getElementById('themeEmoji');
+const themeLabel     = document.getElementById('themeLabel');
+
+function applyTheme(theme) {
+  const isMale = theme === 'male';
+  document.body.classList.toggle('male-theme', isMale);
+
+  if (isMale) {
+    themeEmoji.textContent = '👩';
+    themeLabel.textContent = 'Женская';
+    themeToggleBtn.title = 'Переключить на женскую тему';
+  } else {
+    themeEmoji.textContent = '👨';
+    themeLabel.textContent = 'Мужская';
+    themeToggleBtn.title = 'Переключить на мужскую тему';
+  }
+
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+let currentTheme = localStorage.getItem(THEME_KEY) || 'male';
+applyTheme(currentTheme);
+
+themeToggleBtn.addEventListener('click', () => {
+  currentTheme = currentTheme === 'female' ? 'male' : 'female';
+  applyTheme(currentTheme);
+});
+
+/* ============================================================
+   БОКОВОЕ МЕНЮ
+   ============================================================ */
+function renderSidebar() {
+  sidebarNav.innerHTML = '';
+
+  const navTitle = document.createElement('div');
+  navTitle.className = 'sidebar-title';
+  navTitle.textContent = 'Навигация';
+  sidebarNav.append(navTitle);
+
+  const allBtn = document.createElement('button');
+  allBtn.className = `chapter-btn ${currentChapter === 'all' ? 'active' : ''}`;
+  allBtn.dataset.chapter = 'all';
+  allBtn.textContent = 'Все главы';
+  sidebarNav.append(allBtn);
+
+  const chapTitle = document.createElement('div');
+  chapTitle.className = 'sidebar-title';
+  chapTitle.textContent = 'Разделы базы';
+  sidebarNav.append(chapTitle);
+
+  chapters.forEach(ch => {
+    const row = document.createElement('div');
+    row.className = 'chapter-row';
+
+    const btn = document.createElement('button');
+    btn.className = `chapter-btn ${currentChapter === ch ? 'active' : ''}`;
+    btn.dataset.chapter = ch;
+    btn.textContent = ch;
+    btn.title = ch;
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'chapter-del-btn';
+    delBtn.dataset.deleteChapter = ch;
+    delBtn.title = `Удалить главу «${ch}»`;
+    delBtn.innerHTML = '&times;';
+
+    row.append(btn, delBtn);
+    sidebarNav.append(row);
+  });
+
+  const addRow = document.createElement('div');
+  addRow.className = 'chapter-add-row';
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'add-chapter-btn';
+  addBtn.textContent = '+ Новая глава';
+
+  addRow.append(addBtn);
+  sidebarNav.append(addRow);
+
+  const chaptersList = document.getElementById('chaptersList');
+  const sectionsList = document.getElementById('sectionsList');
+
+  chaptersList.innerHTML = chapters.map(c => `<option value="${c}">`).join('');
+
+  const allSections = [...new Set(cardsData.map(c => c.section))];
+  sectionsList.innerHTML = allSections.map(s => `<option value="${s}">`).join('');
+}
+
+function showNewChapterInput() {
+  const row = sidebarNav.querySelector('.chapter-add-row');
+  if (!row || row.querySelector('.chapter-input')) return;
+
+  row.innerHTML = `
+    <input type="text" class="chapter-input" placeholder="Название главы..." maxlength="40">
+    <button type="button" class="chapter-ok-btn" title="Добавить главу">&#10003;</button>
+  `;
+
+  row.querySelector('.chapter-input').focus();
+}
+
+function commitNewChapter() {
+  const input = sidebarNav.querySelector('.chapter-input');
+  if (!input) return;
+
+  const name = input.value.trim().replace(/\s+/g, ' ');
+  if (!name) { input.focus(); return; }
+
+  if (chapters.some(c => c.toLowerCase() === name.toLowerCase())) {
+    alert(`Глава «${name}» уже существует.`);
+    input.focus();
+    return;
+  }
+
+  chapters.push(name);
+  saveChapters();
+  renderSidebar();
+}
+
+function deleteChapter(name) {
+  if (!chapters.includes(name)) return;
+
+  const cardsInChapter = cardsData.filter(c => c.chapter === name);
+
+  if (!confirm(`Удалить главу «${name}»?`)) return;
+
+  if (cardsInChapter.length > 0) {
+    const removeCards = confirm(
+      `В главе «${name}» ${cardsInChapter.length} карточек.\n\n` +
+      `ОК — удалить их вместе с главой.\n` +
+      `Отмена — сохранить карточки и перенести их в главу «Без главы».`
+    );
+
+    if (removeCards) {
+      cardsData = cardsData.filter(c => c.chapter !== name);
+    } else {
+      cardsInChapter.forEach(c => {
+        c.chapter = 'Без главы';
+        c.category = `Без главы • ${c.section}`;
+      });
+      if (!chapters.includes('Без главы')) chapters.push('Без главы');
+    }
+  }
+
+  chapters = chapters.filter(c => c !== name);
+
+  if (currentChapter === name) {
+    currentChapter = 'all';
+    currentSection = 'all';
+    currentChapterBadge.textContent = 'Глава: Все главы';
+  }
+
+  saveChapters();
+  saveToStorage();
+  renderSidebar();
+  renderTopTabs();
+  renderCards();
+}
+
+/* ============================================================
+   ОТРИСОВКА КАРТОЧЕК
+   ============================================================ */
+function renderCards() {
+  grid.innerHTML = '';
+
+  const sortedCards = [...cardsData].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)));
+
+  sortedCards.forEach(item => {
+    const card = document.createElement('article');
+    card.className = `card ${item.pinned ? 'pinned' : ''}`;
+    card.dataset.chapter = item.chapter;
+    card.dataset.section = item.section;
+
+    const codeContent = highlightCode(item.rawCode);
+
+    card.innerHTML = `
+      <div class="card-header">
+        <h2 class="card-title">${item.title}</h2>
+        <div class="header-right">
+          <span class="badge">${item.category || (item.chapter + ' • ' + item.section)}</span>
+          <button class="desc-panel-btn" data-id="${item.id}" title="Открыть описание в боковой панели">&#128221;</button>
+          <button class="pin-card-btn ${item.pinned ? 'active' : ''}" data-id="${item.id}" title="${item.pinned ? 'Открепить карточку' : 'Закрепить вверху списка'}">&#9733;</button>
+          <button class="edit-card-btn" data-id="${item.id}" title="Редактировать карточку">&#9998;</button>
+          <button class="delete-card-btn" data-id="${item.id}" title="Удалить карточку">&times;</button>
+        </div>
+      </div>
+      <pre class="code-box" data-code="${item.rawCode.replace(/"/g, '&quot;')}"><code>${codeContent}</code></pre>
+      <div class="card-desc">${item.desc}</div>
+    `;
+
+    grid.append(card);
+  });
+
+  filterCards();
+}
+
+/* ============================================================
+   ВЕРХНИЕ ВКЛАДКИ
+   ============================================================ */
+function renderTopTabs() {
+  const relevantCards = currentChapter === 'all'
+    ? cardsData
+    : cardsData.filter(c => c.chapter === currentChapter);
+
+  const sections = ['all', ...new Set(relevantCards.map(c => c.section))];
+
+  tabsContainer.innerHTML = '';
+
+  sections.forEach(sec => {
+    const btn = document.createElement('button');
+    btn.className = `tab-btn ${sec === currentSection ? 'active' : ''}`;
+    btn.dataset.section = sec;
+    btn.textContent = sec === 'all' ? 'Все разделы' : sec;
+    tabsContainer.append(btn);
+  });
+}
+
+function filterCards() {
+  const query = searchInput.value.toLowerCase();
+
+  document.querySelectorAll('.card').forEach(card => {
+    const matchesChapter = currentChapter === 'all' || card.dataset.chapter === currentChapter;
+    const matchesSection = currentSection === 'all' || card.dataset.section === currentSection;
+    const matchesSearch  = card.textContent.toLowerCase().includes(query);
+
+    card.style.display = (matchesChapter && matchesSection && matchesSearch) ? 'flex' : 'none';
+  });
+}
+
+/* ============================================================
+   ОТКРЫТИЕ/ЗАКРЫТИЕ МЕНЮ
+   ============================================================ */
+function toggleMenu() {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
+
+burgerBtn.addEventListener('click', toggleMenu);
+overlay.addEventListener('click', toggleMenu);
+
+/* ============================================================
+   КЛИКИ ПО БОКОВОМУ МЕНЮ
+   ============================================================ */
+sidebarNav.addEventListener('click', (e) => {
+  const delBtn = e.target.closest('.chapter-del-btn');
+  if (delBtn) { deleteChapter(delBtn.dataset.deleteChapter); return; }
+
+  if (e.target.closest('.add-chapter-btn')) { showNewChapterInput(); return; }
+  if (e.target.closest('.chapter-ok-btn'))  { commitNewChapter(); return; }
+
+  const btn = e.target.closest('.chapter-btn');
+  if (!btn) return;
+
+  currentChapter = btn.dataset.chapter;
+  currentSection = 'all';
+  currentChapterBadge.textContent = `Глава: ${btn.textContent}`;
+
+  renderSidebar();
+  renderTopTabs();
+  filterCards();
+  toggleMenu();
+});
+
+sidebarNav.addEventListener('keydown', (e) => {
+  if (!e.target.classList.contains('chapter-input')) return;
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    commitNewChapter();
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    renderSidebar();
+  }
+});
+
+tabsContainer.addEventListener('click', (e) => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  currentSection = btn.dataset.section;
+  filterCards();
+});
+
+searchInput.addEventListener('input', filterCards);
+
+/* ============================================================
+   МОДАЛЬНОЕ ОКНО
+   ============================================================ */
+const modalOverlay   = document.getElementById('modalOverlay');
+const openModalBtn   = document.getElementById('openModalBtn');
+const closeModalBtn  = document.getElementById('closeModalBtn');
+const addCardForm    = document.getElementById('addCardForm');
+const descEditor     = document.getElementById('descEditor');
+const modalTitle     = document.getElementById('modalTitle');
+const submitModalBtn = document.getElementById('submitModalBtn');
+
+openModalBtn.addEventListener('click', () => {
+  editingCardId = null;
+  modalTitle.textContent = 'Новая карточка';
+  submitModalBtn.textContent = 'Сохранить карточку';
+  addCardForm.reset();
+  descEditor.innerHTML = '';
+
+  if (currentChapter !== 'all') {
+    document.getElementById('cardChapter').value = currentChapter;
+  }
+  if (currentSection !== 'all') {
+    document.getElementById('cardSection').value = currentSection;
+  }
+
+  modalOverlay.classList.add('open');
+});
+
+closeModalBtn.addEventListener('click', () => modalOverlay.classList.remove('open'));
+
+/* ============================================================
+   КЛИКИ ПО КАРТОЧКАМ
+   ============================================================ */
+grid.addEventListener('click', (e) => {
+  /* Открыть боковую панель описания */
+  const descBtn = e.target.closest('.desc-panel-btn');
+  if (descBtn) {
+    const id = Number(descBtn.dataset.id);
+    openDescDrawer(id);
+    return;
+  }
+
+  const pinBtn = e.target.closest('.pin-card-btn');
+  if (pinBtn) {
+    const id = Number(pinBtn.dataset.id);
+    const card = cardsData.find(c => c.id === id);
+    if (!card) return;
+
+    card.pinned = !card.pinned;
+    saveToStorage();
+    renderCards();
+    return;
+  }
+
+  const editBtn = e.target.closest('.edit-card-btn');
+  if (editBtn) {
+    const id = Number(editBtn.dataset.id);
+    const card = cardsData.find(c => c.id === id);
+    if (!card) return;
+
+    editingCardId = card.id;
+    modalTitle.textContent = 'Редактировать карточку';
+    submitModalBtn.textContent = 'Сохранить изменения';
+
+    document.getElementById('cardChapter').value = card.chapter;
+    document.getElementById('cardSection').value = card.section;
+    document.getElementById('cardTitle').value   = card.title;
+    document.getElementById('cardCode').value    = card.rawCode;
+    descEditor.innerHTML = card.desc;
+
+    modalOverlay.classList.add('open');
+    return;
+  }
+
+  const delBtn = e.target.closest('.delete-card-btn');
+  if (delBtn) {
+    const id = Number(delBtn.dataset.id);
+    cardsData = cardsData.filter(c => c.id !== id);
+    saveToStorage();
+    renderSidebar();
+    renderTopTabs();
+    renderCards();
+    return;
+  }
+
+  const codeBox = e.target.closest('.code-box');
+  if (codeBox) {
+    navigator.clipboard.writeText(codeBox.dataset.code);
+    codeBox.classList.add('copied');
+    setTimeout(() => codeBox.classList.remove('copied'), 1200);
+  }
+});
+
+/* ============================================================
+   БОКОВАЯ ПАНЕЛЬ ОПИСАНИЯ (DRAWER)
+   ============================================================ */
+const descDrawer      = document.getElementById('descDrawer');
+const drawerOverlay   = document.getElementById('drawerOverlay');
+const drawerTitle     = document.getElementById('drawerTitle');
+const drawerEditor    = document.getElementById('drawerEditor');
+const drawerCloseBtn  = document.getElementById('drawerCloseBtn');
+const drawerCancelBtn = document.getElementById('drawerCancelBtn');
+const drawerSaveBtn   = document.getElementById('drawerSaveBtn');
+const drawerTextColor = document.getElementById('drawerTextColor');
+const drawerBgColor   = document.getElementById('drawerBgColor');
+const drawerClearFmt  = document.getElementById('drawerClearFmt');
+
+let drawerCardId    = null;
+let savedDrawerRange = null;
+
+function openDescDrawer(cardId) {
+  const card = cardsData.find(c => c.id === cardId);
+  if (!card) return;
+
+  drawerCardId = cardId;
+  drawerTitle.textContent = card.title;
+  drawerEditor.innerHTML  = card.desc || '';
+  savedDrawerRange = null;
+
+  descDrawer.classList.add('open');
+  drawerOverlay.classList.add('open');
+
+  /* Фокус в редактор — чтобы сразу можно было печатать */
+  setTimeout(() => drawerEditor.focus(), 50);
+}
+
+function closeDescDrawer() {
+  descDrawer.classList.remove('open');
+  drawerOverlay.classList.remove('open');
+  drawerCardId = null;
+  savedDrawerRange = null;
+}
+
+drawerCloseBtn.addEventListener('click', closeDescDrawer);
+drawerCancelBtn.addEventListener('click', closeDescDrawer);
+drawerOverlay.addEventListener('click', closeDescDrawer);
+
+/* Esc закрывает панель */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && descDrawer.classList.contains('open')) {
+    closeDescDrawer();
+  }
+});
+
+/* Сохранение описания */
+drawerSaveBtn.addEventListener('click', () => {
+  if (drawerCardId === null) return;
+
+  const card = cardsData.find(c => c.id === drawerCardId);
+  if (!card) return;
+
+  card.desc = drawerEditor.innerHTML.trim() || 'Без описания';
+  saveToStorage();
+  renderCards();
+  closeDescDrawer();
+});
+
+/* Запоминаем выделение внутри редактора, пока пользователь не кликнул по палитре */
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0 && !sel.isCollapsed) {
+    const node = sel.anchorNode;
+    if (node && drawerEditor.contains(node)) {
+      savedDrawerRange = sel.getRangeAt(0).cloneRange();
+    }
+  }
+});
+
+/* Применение форматирования к выделенному фрагменту */
+function applyDrawerFormatting(inlineStyle) {
+  if (!savedDrawerRange) return;
+  if (!drawerEditor.contains(savedDrawerRange.commonAncestorContainer)) return;
+
+  const span = document.createElement('span');
+  span.style.cssText = inlineStyle;
+  span.appendChild(savedDrawerRange.extractContents());
+  savedDrawerRange.insertNode(span);
+
+  /* После применения — сбрасываем выделение и фокус возвращаем в редактор */
+  savedDrawerRange = null;
+  window.getSelection().removeAllRanges();
+  drawerEditor.focus();
+}
+
+drawerTextColor.addEventListener('change', (e) => {
+  applyDrawerFormatting(`color: ${e.target.value}; font-weight: 600;`);
+});
+
+drawerBgColor.addEventListener('change', (e) => {
+  applyDrawerFormatting(`background: ${e.target.value}; color: #fff; padding: 1px 6px; border-radius: 4px;`);
+});
+
+drawerClearFmt.addEventListener('click', () => {
+  /* Оставляем только текст, убираем все теги и стили */
+  drawerEditor.innerHTML = drawerEditor.textContent;
+});
+
+/* ============================================================
+   ФОРМАТИРОВАНИЕ ОПИСАНИЯ В МОДАЛЬНОМ ОКНЕ
+   ============================================================ */
+function applyFormatting(className, inlineStyle = '') {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return;
+
+  const range = sel.getRangeAt(0);
+  if (!descEditor.contains(range.commonAncestorContainer)) return;
+
+  const span = document.createElement('span');
+  if (className)   span.className = className;
+  if (inlineStyle) span.style.cssText = inlineStyle;
+
+  span.appendChild(range.extractContents());
+  range.insertNode(span);
+  sel.removeAllRanges();
+}
+
+document.querySelectorAll('.fmt-btn[data-action="class"]').forEach(btn => {
+  btn.addEventListener('click', () => applyFormatting(btn.dataset.val));
+});
+
+document.getElementById('customBgColor').addEventListener('input', (e) => {
+  applyFormatting('', `background: ${e.target.value}; color: #fff; padding: 1px 6px; border-radius: 4px;`);
+});
+
+document.getElementById('customTextColor').addEventListener('input', (e) => {
+  applyFormatting('', `color: ${e.target.value}; font-weight: 600;`);
+});
+
+document.getElementById('clearFmtBtn').addEventListener('click', () => {
+  descEditor.innerHTML = descEditor.textContent;
+});
+
+/* ============================================================
+   СОХРАНЕНИЕ КАРТОЧКИ
+   ============================================================ */
+addCardForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const chapter = document.getElementById('cardChapter').value.trim();
+  const section = document.getElementById('cardSection').value.trim();
+  const title   = document.getElementById('cardTitle').value.trim();
+  const rawCode = document.getElementById('cardCode').value.trim();
+  const desc    = descEditor.innerHTML.trim() || 'Без описания';
+
+  if (chapter && !chapters.includes(chapter)) {
+    chapters.push(chapter);
+    saveChapters();
+  }
+
+  if (editingCardId !== null) {
+    const idx = cardsData.findIndex(c => c.id === editingCardId);
+    if (idx !== -1) {
+      cardsData[idx] = { ...cardsData[idx], chapter, section, title, category: `${chapter} • ${section}`, rawCode, desc };
+    }
+  } else {
+    cardsData.unshift({
+      id: Date.now(),
+      pinned: false,
+      chapter, section, title,
+      category: `${chapter} • ${section}`,
+      rawCode, desc
+    });
+  }
+
+  saveToStorage();
+  editingCardId = null;
+  addCardForm.reset();
+  descEditor.innerHTML = '';
+  modalOverlay.classList.remove('open');
+
+  renderSidebar();
+  renderTopTabs();
+  renderCards();
+});
+
+/* ============================================================
+   ЭКСПОРТ / ИМПОРТ / СБРОС
+   ============================================================ */
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const payload = {
+    app: 'knowledge-base',
+    version: 2,
+    chapters: chapters,
+    cards: cardsData
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'my_knowledge_base.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+const importBtn = document.getElementById('importBtn');
+const importFileInput = document.getElementById('importFileInput');
+
+importBtn.addEventListener('click', () => importFileInput.click());
+
+importFileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = (event) => {
+    try {
+      const parsed = JSON.parse(event.target.result);
+      let importedCards, importedChapters;
+
+      if (Array.isArray(parsed)) {
+        importedCards = parsed;
+        importedChapters = [];
+      } else if (parsed && Array.isArray(parsed.cards)) {
+        importedCards = parsed.cards;
+        importedChapters = Array.isArray(parsed.chapters) ? parsed.chapters : [];
+      } else {
+        alert('Ошибка: ожидается массив карточек или объект { chapters, cards }.');
+        return;
+      }
+
+      cardsData = importedCards.map((item, index) => ({
+        ...item,
+        id: item.id || (Date.now() + index),
+        pinned: Boolean(item.pinned)
+      }));
+
+      chapters = importedChapters.filter(c => typeof c === 'string' && c.trim());
+      cardsData.forEach(c => {
+        if (c.chapter && !chapters.includes(c.chapter)) chapters.push(c.chapter);
+      });
+      if (chapters.length === 0) chapters = [...defaultChapters];
+
+      saveChapters();
+      saveToStorage();
+
+      currentChapter = 'all';
+      currentSection = 'all';
+      currentChapterBadge.textContent = 'Глава: Все главы';
+
+      renderSidebar();
+      renderTopTabs();
+      renderCards();
+      toggleMenu();
+    } catch (err) {
+      alert('Не удалось прочитать JSON-файл. Проверьте его структуру.');
+    } finally {
+      importFileInput.value = '';
+    }
+  };
+
+  reader.readAsText(file);
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (confirm('Сбросить все изменения к начальным карточкам?')) {
+    cardsData = [...defaultCards];
+    chapters  = [...defaultChapters];
+
+    saveChapters();
+    saveToStorage();
+
+    currentChapter = 'all';
+    currentSection = 'all';
+    currentChapterBadge.textContent = 'Глава: Все главы';
+
+    renderSidebar();
+    renderTopTabs();
+    renderCards();
+  }
+});
+
+/* ============================================================
+   ПЕРВЫЙ ЗАПУСК
+   ============================================================ */
+renderSidebar();
+renderTopTabs();
+renderCards();
+</script>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Шпаргалка разработчика: DOM, Массивы, Vue</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #070b19 0%, #0f1e3d 50%, #050811 100%);
+      --card-bg: rgba(18, 27, 48, 0.85);
+      --card-border: rgba(219, 39, 119, 0.3);
+      /* Темно-розовая парящая тень */
+      --pink-shadow: 0 14px 30px -5px rgba(157, 23, 77, 0.55), 
+                     0 4px 15px -2px rgba(219, 39, 119, 0.3);
+      --pink-shadow-hover: 0 20px 40px -5px rgba(190, 24, 93, 0.75), 
+                           0 8px 20px -2px rgba(236, 72, 153, 0.45);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 40px 24px;
+      line-height: 1.5;
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 36px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #60a5fa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Панель управления: вкладки и поиск */
+    .controls {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .tab-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(219, 39, 119, 0.35);
+      color: var(--text-main);
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .tab-btn:hover {
+      border-color: #f472b6;
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #be185d, #7e22ce);
+      border-color: #f472b6;
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(219, 39, 119, 0.6);
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(219, 39, 119, 0.4);
+      background: rgba(6, 9, 19, 0.85);
+      color: #f8fafc;
+      font-size: 1rem;
+      outline: none;
+      box-shadow: 0 4px 15px rgba(157, 23, 77, 0.25);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-box:focus {
+      border-color: #ec4899;
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.5);
+    }
+
+    /* Сетка карточек */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Эффект парящей карточки */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--pink-shadow);
+      backdrop-filter: blur(10px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card:hover {
+      transform: translateY(-7px);
+      box-shadow: var(--pink-shadow-hover);
+      border-color: rgba(236, 72, 153, 0.65);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(157, 23, 77, 0.35);
+      border: 1px solid rgba(236, 72, 153, 0.4);
+      color: #fbcfe8;
+      white-space: nowrap;
+    }
+
+    /* Блок с кодом внутри карточки */
+    .code-box {
+      background: #060913;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .code-box:hover {
+      border-color: #ec4899;
+    }
+
+    .code-box::after {
+      content: 'Копировать';
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 0.7rem;
+      background: rgba(219, 39, 119, 0.2);
+      color: #f472b6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .code-box:hover::after {
+      opacity: 1;
+    }
+
+    .code-box.copied::after {
+      content: 'Скопировано!';
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      opacity: 1;
+    }
+
+    /* Подсветка синтаксиса */
+    .syn-obj { color: #38bdf8; }
+    .syn-method { color: #f472b6; }
+    .syn-str { color: #a3e635; }
+    .syn-kw { color: #c084fc; }
+
+    .card-desc {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+    }
+
+    /* Маркеры (фон) и цвета текста */
+    .m-pink {
+      background: rgba(219, 39, 119, 0.35);
+      color: #fce7f3;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .m-blue {
+      background: rgba(37, 99, 235, 0.4);
+      color: #dbeafe;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .m-yellow {
+      background: rgba(202, 138, 4, 0.35);
+      color: #fef08a;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .t-pink { color: #f472b6; font-weight: 600; }
+    .t-cyan { color: #38bdf8; font-weight: 600; }
+    .t-green { color: #4ade80; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Интерактивная база знаний</h1>
+    <p>Нажмите на блок с кодом, чтобы скопировать команду</p>
+
+    <div class="controls">
+      <div class="tabs" id="tabsContainer">
+        <button class="tab-btn active" data-section="all">Все</button>
+        <button class="tab-btn" data-section="DOM">DOM</button>
+        <button class="tab-btn" data-section="Массивы">Массивы</button>
+        <button class="tab-btn" data-section="Vue">Vue</button>
+      </div>
+
+      <input type="text" id="searchInput" class="search-box" placeholder="Поиск по командам и описанию...">
+    </div>
+  </header>
+
+  <main class="grid" id="cardsGrid"></main>
+
+  <script>
+    const cardsData = [
+      // ================= РАЗДЕЛ: DOM =================
+      {
+        section: 'DOM',
+        title: 'Поиск одного элемента',
+        category: 'Поиск',
+        codeHtml: `<span class="syn-kw">const</span> el = <span class="syn-obj">document</span>.<span class="syn-method">querySelector</span>(<span class="syn-str">'.class'</span>);`,
+        rawCode: `const el = document.querySelector('.class');`,
+        desc: `Возвращает <span class="m-pink">первый найденный элемент</span> по любому CSS-селектору (<span class="t-cyan">.class</span>, <span class="t-cyan">#id</span>). Если не найден — вернет <span class="t-pink">null</span>.`
+      },
+      {
+        section: 'DOM',
+        title: 'Поиск всех элементов',
+        category: 'Поиск',
+        codeHtml: `<span class="syn-kw">const</span> list = <span class="syn-obj">document</span>.<span class="syn-method">querySelectorAll</span>(<span class="syn-str">'.item'</span>);`,
+        rawCode: `const list = document.querySelectorAll('.item');`,
+        desc: `Возвращает коллекцию <span class="m-blue">NodeList</span> из всех подходящих элементов. Поддерживает перебор через <span class="t-green">forEach()</span>.`
+      },
+      {
+        section: 'DOM',
+        title: 'Работа с классами',
+        category: 'Стили и классы',
+        codeHtml: `<span class="syn-obj">el</span>.classList.<span class="syn-method">toggle</span>(<span class="syn-str">'active'</span>);`,
+        rawCode: `el.classList.toggle('active');`,
+        desc: `Методы управления классами: <span class="t-green">add()</span>, <span class="t-pink">remove()</span>, <span class="m-yellow">toggle()</span> (переключить) и <span class="t-cyan">contains()</span> (проверить наличие).`
+      },
+      {
+        section: 'DOM',
+        title: 'Изменение текста',
+        category: 'Контент',
+        codeHtml: `<span class="syn-obj">el</span>.<span class="syn-method">textContent</span> = <span class="syn-str">'Новый текст'</span>;`,
+        rawCode: `el.textContent = 'Новый текст';`,
+        desc: `Безопасно меняет текст внутри узла. Все теги внутри строки будут восприняты как <span class="m-blue">обычный текст</span>.`
+      },
+      {
+        section: 'DOM',
+        title: 'Создание и вставка узла',
+        category: 'Дерево DOM',
+        codeHtml: `<span class="syn-kw">const</span> card = <span class="syn-obj">document</span>.<span class="syn-method">createElement</span>(<span class="syn-str">'div'</span>);\n<span class="syn-obj">parent</span>.<span class="syn-method">append</span>(card);`,
+        rawCode: `const card = document.createElement('div');\nparent.append(card);`,
+        desc: `Создает элемент в памяти. Вставляется в DOM через <span class="t-green">append()</span> (в конец) или <span class="t-cyan">prepend()</span> (в начало).`
+      },
+      {
+        section: 'DOM',
+        title: 'Слушатель событий',
+        category: 'События',
+        codeHtml: `<span class="syn-obj">btn</span>.<span class="syn-method">addEventListener</span>(<span class="syn-str">'click'</span>, (e) => {\n  <span class="syn-obj">e</span>.<span class="syn-method">preventDefault</span>();\n});`,
+        rawCode: `btn.addEventListener('click', (e) => {\n  e.preventDefault();\n});`,
+        desc: `Вешает обработчик события. Свойство <span class="m-yellow">e.target</span> указывает на элемент, вызвавший событие.`
+      },
+
+      // ================= РАЗДЕЛ: МАССИВЫ =================
+      {
+        section: 'Массивы',
+        title: 'Трансформация массива (map)',
+        category: 'Массивы JS',
+        codeHtml: `<span class="syn-kw">const</span> names = <span class="syn-obj">users</span>.<span class="syn-method">map</span>(u => u.name);`,
+        rawCode: `const names = users.map(u => u.name);`,
+        desc: `Создает <span class="m-pink">новый массив</span> такой же длины, преобразуя каждый элемент по заданной функции.`
+      },
+      {
+        section: 'Массивы',
+        title: 'Фильтрация (filter)',
+        category: 'Массивы JS',
+        codeHtml: `<span class="syn-kw">const</span> active = <span class="syn-obj">users</span>.<span class="syn-method">filter</span>(u => u.isOnline);`,
+        rawCode: `const active = users.filter(u => u.isOnline);`,
+        desc: `Возвращает <span class="m-blue">новый массив</span>, в который попадают только элементы, прошедшие проверку (<span class="t-green">true</span>).`
+      },
+      {
+        section: 'Массивы',
+        title: 'Поиск одного элемента (find)',
+        category: 'Массивы JS',
+        codeHtml: `<span class="syn-kw">const</span> user = <span class="syn-obj">users</span>.<span class="syn-method">find</span>(u => u.id === <span class="syn-str">5</span>);`,
+        rawCode: `const user = users.find(u => u.id === 5);`,
+        desc: `Возвращает <span class="m-yellow">первый подходящий элемент</span> массива (сам объект, а не массив). Если не найден — <span class="t-pink">undefined</span>.`
+      },
+      {
+        section: 'Массивы',
+        title: 'Свертка массива (reduce)',
+        category: 'Массивы JS',
+        codeHtml: `<span class="syn-kw">const</span> sum = <span class="syn-obj">prices</span>.<span class="syn-method">reduce</span>((acc, n) => acc + n, <span class="syn-str">0</span>);`,
+        rawCode: `const sum = prices.reduce((acc, n) => acc + n, 0);`,
+        desc: `Сводит массив к <span class="m-pink">одному значению</span>. Вторым аргументом (<span class="t-cyan">0</span>) задается начальное значение аккумулятора <span class="t-green">acc</span>.`
+      },
+
+      // ================= РАЗДЕЛ: VUE =================
+      {
+        section: 'Vue',
+        title: 'Реактивная переменная (ref)',
+        category: 'Vue 3 Реактивность',
+        codeHtml: `<span class="syn-kw">const</span> count = <span class="syn-method">ref</span>(<span class="syn-str">0</span>);\ncount.<span class="syn-obj">value</span>++;`,
+        rawCode: `const count = ref(0);\ncount.value++;`,
+        desc: `Создает реактивную ссылку. В скрипте обращение идет через <span class="m-pink">.value</span>, а в шаблоне <span class="t-cyan">&lt;template&gt;</span> значение разворачивается автоматически.`
+      },
+      {
+        section: 'Vue',
+        title: 'Рендеринг списка (v-for)',
+        category: 'Vue Директивы',
+        codeHtml: `<span class="syn-obj">&lt;li</span> <span class="syn-method">v-for</span>=<span class="syn-str">"item in items"</span> <span class="syn-method">:key</span>=<span class="syn-str">"item.id"</span><span class="syn-obj">&gt;</span>\n  {{ item.title }}\n<span class="syn-obj">&lt;/li&gt;</span>`,
+        rawCode: `<li v-for="item in items" :key="item.id">\n  {{ item.title }}\n</li>`,
+        desc: `Размножает DOM-элемент на основе массива. Атрибут <span class="m-yellow">:key</span> с уникальным ID обязателен для правильного обновления DOM.`
+      },
+      {
+        section: 'Vue',
+        title: 'Двусторонняя привязка (v-model)',
+        category: 'Vue Формы',
+        codeHtml: `<span class="syn-obj">&lt;input</span> <span class="syn-method">v-model.trim</span>=<span class="syn-str">"searchQuery"</span> <span class="syn-obj">/&gt;</span>`,
+        rawCode: `<input v-model.trim="searchQuery" />`,
+        desc: `Связывает поле ввода с переменной. Модификатор <span class="m-blue">.trim</span> автоматически обрезает пробелы по краям, а <span class="t-cyan">.number</span> приводит к числу.`
+      },
+      {
+        section: 'Vue',
+        title: 'События и привязка атрибутов',
+        category: 'Vue Шаблоны',
+        codeHtml: `<span class="syn-obj">&lt;button</span> <span class="syn-method">:class</span>=<span class="syn-str">"{ active: isOpen }"</span> <span class="syn-method">@click</span>=<span class="syn-str">"toggle"</span><span class="syn-obj">&gt;</span>`,
+        rawCode: `<button :class="{ active: isOpen }" @click="toggle">`,
+        desc: `Сокращение <span class="t-cyan">:</span> (<span class="m-blue">v-bind</span>) динамически передает JS-выражение в атрибут, а <span class="t-pink">@</span> (<span class="m-pink">v-on</span>) вешает слушатель событий.`
+      }
+    ];
+
+    const grid = document.getElementById('cardsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const tabsContainer = document.getElementById('tabsContainer');
+
+    let currentSection = 'all';
+
+    // Отрисовка всех карточек при загрузке
+    cardsData.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.dataset.section = item.section;
+      card.innerHTML = `
+        <div class="card-header">
+          <h2 class="card-title">${item.title}</h2>
+          <span class="badge">${item.category}</span>
+        </div>
+        <pre class="code-box" data-code="${item.rawCode.replace(/"/g, '&quot;')}"><code>${item.codeHtml}</code></pre>
+        <p class="card-desc">${item.desc}</p>
+      `;
+      grid.append(card);
+    });
+
+    // Единая функция фильтрации по вкладке и поисковому запросу
+    function filterCards() {
+      const query = searchInput.value.toLowerCase();
+      const allCards = document.querySelectorAll('.card');
+
+      allCards.forEach(card => {
+        const matchesSection = currentSection === 'all' || card.dataset.section === currentSection;
+        const matchesSearch = card.textContent.toLowerCase().includes(query);
+
+        card.style.display = (matchesSection && matchesSearch) ? 'flex' : 'none';
+      });
+    }
+
+    // Переключение вкладок
+    tabsContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn) return;
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      currentSection = btn.dataset.section;
+      filterCards();
+    });
+
+    // Живой поиск
+    searchInput.addEventListener('input', filterCards);
+
+    // Копирование кода по клику
+    grid.addEventListener('click', (e) => {
+      const codeBox = e.target.closest('.code-box');
+      if (!codeBox) return;
+
+      navigator.clipboard.writeText(codeBox.dataset.code);
+      codeBox.classList.add('copied');
+      setTimeout(() => codeBox.classList.remove('copied'), 1200);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+/* Общие стили для сброса отступов */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Простой градиент: темно-фиолетовый сверху, темно-синий снизу */
+.background-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #2b0057, #000a33);
+  gap: 30px;
+}
+
+/* Стили самой карточки */
+.flashcard {
+  background: rgba(20, 20, 25, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 30px;
+  width: 320px;
+  color: #e0e0e0;
+  
+  /* Фиолетово-розовое свечение */
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.6), 
+    0 0 20px rgba(138, 43, 226, 0.5), 
+    0 0 40px rgba(255, 20, 147, 0.3);
+  
+  /* Анимация парения */
+  animation: float 4s ease-in-out infinite;
+}
+
+.flashcard h2 {
+  margin-top: 0;
+  color: #fff;
+  font-size: 1.5rem;
+  border-bottom: 2px solid rgba(255, 20, 147, 0.6);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.flashcard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.flashcard li {
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.flashcard li strong {
+  color: #00bfff; /* Голубой акцент для свойств */
+}
+
+/* Ключевые кадры для эффекта левитации */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}

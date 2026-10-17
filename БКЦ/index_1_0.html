@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="male">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Образный код 1–1000 (RU / EN / Транскрипция)</title>
+  <style>
+    :root[data-theme="male"] {
+      --bg-gradient: linear-gradient(135deg, #040914 0%, #0a192f 45%, #0f3156 100%);
+      --panel-bg: rgba(15, 29, 54, 0.85);
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.45);
+      --accent-btn: linear-gradient(135deg, #0284c7, #2563eb);
+      --border-color: rgba(56, 189, 248, 0.28);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    :root[data-theme="female"] {
+      --bg-gradient: linear-gradient(135deg, #160516 0%, #380936 45%, #2b0f4c 100%);
+      --panel-bg: rgba(45, 12, 48, 0.85);
+      --accent: #f472b6;
+      --accent-glow: rgba(244, 114, 182, 0.45);
+      --accent-btn: linear-gradient(135deg, #db2777, #9333ea);
+      --border-color: rgba(244, 114, 182, 0.3);
+      --text-main: #fdf2f8;
+      --text-muted: #f9a8d4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px 16px;
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: var(--panel-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 20px var(--accent-glow);
+    }
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      color: var(--text-main);
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 12px var(--accent-glow);
+      letter-spacing: 0.4px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-input {
+      background: rgba(0, 0, 0, 0.45);
+      color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 0.95rem;
+      min-width: 240px;
+      outline: none;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    button, .btn-label {
+      background: rgba(0, 0, 0, 0.45);
+      color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.45);
+      user-select: none;
+    }
+
+    button:hover, .btn-label:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6), 0 0 12px var(--accent-glow);
+    }
+
+    .btn-primary {
+      background: var(--accent-btn);
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 92px;
+      justify-content: center;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-btn);
+      border-color: #ffffff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
+    .list-header {
+      display: grid;
+      grid-template-columns: 78px 1.2fr 1fr 1fr;
+      gap: 12px;
+      padding: 0 16px 10px 16px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+
+    .rows-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Парящая строка-карточка */
+    .word-row {
+      display: flex;
+      justify-content: space-around;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.65), 0 4px 10px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+      align-items: center;
+    }
+
+    .word-row:hover {
+      transform: translateY(-4px) scale(1.004);
+      border-color: rgba(255, 255, 255, 0.42);
+      box-shadow: 0 20px 38px rgba(0, 0, 0, 0.8), 0 0 18px var(--accent-glow);
+    }
+
+    /* Парящая ячейка внутри строки */
+    .floating-cell {
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.42);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .floating-cell:hover, .floating-cell:focus-within {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 22px rgba(0, 0, 0, 0.75), 0 0 10px var(--accent-glow);
+    }
+
+    .num-cell {
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #ffffff;
+      text-shadow: 0 3px 6px rgba(0, 0, 0, 0.85);
+      user-select: none;
+      position: relative;
+    }
+
+    .cell-input {
+    text-align: center;
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+      text-shadow: 0 3px 6px rgba(0, 0, 0, 0.75);
+      letter-spacing: 0.2px;
+    }
+
+    .cell-color-tools {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      opacity: 0.35;
+      transition: opacity 0.15s;
+    }
+
+    .floating-cell:hover .cell-color-tools,
+    .floating-cell:focus-within .cell-color-tools {
+      opacity: 1;
+    }
+
+    .color-picker-wrap {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.45);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .color-picker-wrap input[type="color"] {
+      width: 32px;
+      height: 32px;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .toast {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7), 0 0 15px var(--accent-glow);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 860px) {
+      .list-header { display: none; }
+      .word-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="title-group">
+      <h1>Образный код 1–1000</h1>
+      <button id="themeBtn" class="btn-primary">👔 Женская тема</button>
+    </div>
+    <div class="controls">
+      <input type="text" id="searchInput" class="search-input" placeholder="Поиск (№, слово, перевод)...">
+      <button id="exportBtn" class="btn-primary">⬇ Экспорт JSON</button>
+      <label for="fileInput" class="btn-label">⬆ Импорт JSON</label>
+      <input type="file" id="fileInput" accept=".json">
+      <button id="resetBtn" title="Сбросить все правки и цвета">↺ Сброс</button>
+    </div>
+  </header>
+
+  <div class="tabs" id="tabsContainer"></div>
+
+  <div class="list-header">
+    <div>№ / Фон</div>
+    <div>Образ (RU)</div>
+    <div>Перевод (EN)</div>
+    <div>Транскрипция</div>
+  </div>
+
+  <div class="rows-container" id="rowsContainer"></div>
+</div>
+
+<div class="toast" id="toast">Сохранено</div>
+
+<script>
+const rawItems = [
+  "Копье|Spear|[spɪər]","Лебедь|Swan|[swɒn]","Трезубец|Trident|[ˈtraɪdnt]","Перевернутый стул|Inverted chair|[ɪnˈvɜːtɪd tʃeər]","Капитан Крюк|Captain Hook|[ˈkæptɪn hʊk]","Замок|Padlock|[ˈpædlɒk]","Коса|Scythe|[saɪð]","Очки|Glasses|[ˈɡlɑːsɪz]","Поварешка|Ladle|[ˈleɪdl]","Яблоко|Apple|[ˈæpl]",
+  "Барабанные палочки|Drumsticks|[ˈdrʌmstɪks]","Часы|Clock|[klɒk]","Чертик|Imp|[ɪmp]","Сердечко|Heart|[hɑːt]","Ким Пять-с-плюсом|Kim Possible|[kɪm ˈpɒsəbl]","Гиря|Kettlebell|[ˈketlbel]","Паспорт|Passport|[ˈpɑːspɔːt]","Роза|Rose|[rəʊz]","Корона|Crown|[kraʊn]","Сигарета|Cigarette|[ˌsɪɡəˈret]",
+  "Игральные карты|Playing cards|[ˈpleɪɪŋ kɑːdz]","Уточка|Duck|[dʌk]","Майкл Джордан|Michael Jordan|[ˈmaɪkl ˈdʒɔːdn]","Песочные часы|Hourglass|[ˈaʊəɡlɑːs]","Кинохлопушка|Clapperboard|[ˈklæpəbɔːd]","Будильник|Alarm clock|[əˈlɑːm klɒk]","Электрогитара|Electric guitar|[ɪˈlektrɪk ɡɪˈtɑːr]","Граната|Grenade|[ɡrəˈneɪd]","Календарь|Calendar|[ˈkælɪndər]","Мешок монет|Bag of coins|[bæɡ əv kɔɪnz]",
+  "Дед Мороз|Father Frost|[ˈfɑːðə frɒst]","Зуб|Tooth|[tuːθ]","Илья Муромец|Ilya Muromets|[ˈɪljə ˈmʊrəmets]","Танк|Tank|[tæŋk]","Фотоаппарат|Camera|[ˈkæmərə]","Градусник|Thermometer|[θəˈmɒmɪtər]","Револьвер|Revolver|[rɪˈvɒlvər]","Попугай|Parrot|[ˈpærət]","Терем|Mansion|[ˈmænʃn]","Привидение|Ghost|[ɡəʊst]",
+  "Солдатская каска|Helmet|[ˈhelmɪt]","Полотенце|Towel|[ˈtaʊəl]","Игрушечная машинка|Toy car|[tɔɪ kɑːr]","Молния|Lightning|[ˈlaɪtnɪŋ]","Ягода малина|Raspberry|[ˈrɑːzbəri]","Спираль ДНК|DNA helix|[ˌdiːenˈeɪ ˈhiːlɪks]","Автомат Калашникова|Assault rifle|[əˈsɔːlt ˈraɪfl]","Утюг|Iron|[ˈaɪən]","Золотой самородок|Gold nugget|[ɡəʊld ˈnʌɡɪt]","Монета|Coin|[kɔɪn]",
+  "Летающая тарелка (НЛО)|UFO|[ˌjuːefˈəʊ]","Истребитель|Fighter jet|[ˈfaɪtə dʒet]","Грузовик|Truck|[trʌk]","Диско-шар|Disco ball|[ˈdɪskəʊ bɔːl]","Боксерские перчатки|Boxing gloves|[ˈbɒksɪŋ ɡlʌvz]","Пистолет|Pistol|[ˈpɪstl]","Кетчуп|Ketchup|[ˈketʃəp]","Капкан|Bear trap|[beə træp]","Глобус|Globe|[ɡləʊb]","Секундомер|Stopwatch|[ˈstɒpwɒtʃ]",
+  "Юрий Гагарин|Yuri Gagarin|[ˈjʊəri ɡəˈɡɑːrɪn]","Кубик Рубика|Rubik's Cube|[ˈruːbɪks kjuːb]","Перец чили|Chili pepper|[ˈtʃɪli ˈpepər]","Шахматный конь|Chess knight|[tʃes naɪt]","Кресло-качалка|Rocking chair|[ˈrɒkɪŋ tʃeər]","Байкерский чоппер|Chopper bike|[ˈtʃɒpə baɪk]","Костер|Campfire|[ˈkæmpfaɪər]","Трамвай|Tram|[træm]","Знак Инь-Ян|Yin Yang|[jɪn jæŋ]","Медаль|Medal|[ˈmedl]",
+  "Пряник|Gingerbread|[ˈdʒɪndʒəbred]","Подводная лодка|Submarine|[ˌsʌbməˈriːn]","Шелдон Купер|Sheldon Cooper|[ˈʃeldən ˈkuːpər]","Патрон|Cartridge|[ˈkɑːtrɪdʒ]","Бриллиант|Diamond|[ˈdaɪəmənd]","Бензоколонка|Gas pump|[ɡæs pʌmp]","Топор|Axe|[æks]","Виниловая пластинка|Vinyl record|[ˈvaɪnəl ˈrekɔːd]","Золотой слиток|Gold bar|[ɡəʊld bɑːr]","Воздушный шар|Hot air balloon|[hɒt eə bəˈluːn]",
+  "Мандарин|Tangerine|[ˌtændʒəˈriːn]","Спутник|Satellite|[ˈsætəlaɪt]","Аптечка|First aid kit|[fɜːst eɪd kɪt]","Камера наблюдения|CCTV camera|[ˌsiːsiːtiːˈviː ˈkæmərə]","Делориан (Машина времени)|DeLorean|[dəˈlɔːriən]","Противогаз|Gas mask|[ɡæs mɑːsk]","Кролик в шляпе|Rabbit in a hat|[ˈræbɪt ɪn ə hæt]","Пианино|Piano|[piˈænəʊ]","Кувалда|Sledgehammer|[ˈsledʒhæmər]","Малиновый пиджак|Crimson jacket|[ˈkrɪmzn ˈdʒækɪt]",
+  "Чемодан|Suitcase|[ˈsuːtkeɪs]","Бензопила|Chainsaw|[ˈtʃeɪnsɔː]","Гоночный болид|Race car|[reɪs kɑːr]","Приставка Денди|Console|[ˈkɒnsəʊl]","Молния Маккуин|Lightning McQueen|[ˈlaɪtnɪŋ məˈkwiːn]","Фляжка|Flask|[flɑːsk]","Смартфон|Smartphone|[ˈsmɑːtfəʊn]","Парашют|Parachute|[ˈpærəʃuːt]","Воздушный шарик|Balloon|[bəˈluːn]","Сто долларов|Hundred dollars|[ˈhʌndrəd ˈdɒləz]",
+  "Далматинец|Dalmatian|[dælˈmeɪʃn]","Человек-паук|Spider-Man|[ˈspaɪdəmæn]","Доктор Стрэндж|Doctor Strange|[ˈdɒktə streɪndʒ]","Железный человек|Iron Man|[ˈaɪən mæn]","Капитан Америка|Captain America|[ˈkæptɪn əˈmerɪkə]","Тор|Thor|[θɔːr]","Халк|Hulk|[hʌlk]","Черная Вдова|Black Widow|[blæk ˈwɪdəʊ]","Соколиный Глаз|Hawkeye|[ˈhɔːkaɪ]","Локи|Loki|[ˈləʊki]",
+  "Танос|Thanos|[ˈθænɒs]","Человек-муравей|Ant-Man|[ˈæntmæn]","Черная Пантера|Black Panther|[blæk ˈpænθər]","Капитан Марвел|Captain Marvel|[ˈkæptɪn ˈmɑːvəl]","Алая Ведьма|Scarlet Witch|[ˈskɑːlət wɪtʃ]","Вижн|Vision|[ˈvɪʒn]","Звездный Лорд|Star-Lord|[stɑː lɔːd]","Енот Ракета|Rocket Raccoon|[ˈrɒkɪt rəˈkuːn]","Грут|Groot|[ɡruːt]","Дракс|Drax|[dræks]",
+  "Гамора|Gamora|[ɡəˈmɔːrə]","Ник Фьюри|Nick Fury|[nɪk ˈfjʊəri]","Росомаха|Wolverine|[ˈwʊlvəriːn]","Дэдпул|Deadpool|[ˈdedpuːl]","Профессор Икс|Professor X|[prəˈfesər eks]","Магнето|Magneto|[mæɡˈniːtəʊ]","Зимний Солдат|Winter Soldier|[ˈwɪntə ˈsəʊldʒər]","Мистик|Mystique|[mɪˈstiːk]","Веном|Venom|[ˈvenəm]","Зеленый Гоблин|Green Goblin|[ɡriːn ˈɡɒblɪn]",
+  "Доктор Осьминог|Doctor Octopus|[ˈdɒktər ˈɒktəpəs]","Блэйд|Blade|[bleɪd]","Призрачный гонщик|Ghost Rider|[ɡəʊst ˈraɪdər]","Сорвиголова|Daredevil|[ˈdeədevl]","Каратель|Punisher|[ˈpʌnɪʃər]","Серебряный Серфер|Silver Surfer|[ˈsɪlvə ˈsɜːfər]","Бэтмен|Batman|[ˈbætmæn]","Супермен|Superman|[ˈsuːpəmæn]","Джокер|Joker|[ˈdʒəʊkər]","Харли Квинн|Harley Quinn|[ˈhɑːli kwɪn]",
+  "Чудо-женщина|Wonder Woman|[ˈwʌndə ˈwʊmən]","Аквамен|Aquaman|[ˈækwəmæn]","Флэш|Flash|[flæʃ]","Женщина-кошка|Catwoman|[ˈkætwʊmən]","Лекс Лютор|Lex Luthor|[leks ˈluːθər]","Бэйн|Bane|[beɪn]","Загадочник|Riddler|[ˈrɪdlər]","Шазам|Shazam|[ʃəˈzæm]","Зеленый Фонарь|Green Lantern|[ɡriːn ˈlæntən]","Робин|Robin|[ˈrɒbɪn]",
+  "Хоумлендер|Homelander|[ˈhəʊmlændər]","Бутчер (Пацаны)|Billy Butcher|[ˈbɪli ˈbʊtʃər]","Хеллбой|Hellboy|[ˈhelbɔɪ]","Черепашка Леонардо|Leonardo|[ˌliːəˈnɑːdəʊ]","Черепашка Микеланджело|Michelangelo|[ˌmaɪkəlˈændʒələʊ]","Мастер Сплинтер|Master Splinter|[ˈmɑːstə ˈsplɪntər]","Шреддер|Shredder|[ˈʃredər]","Дарт Вейдер|Darth Vader|[dɑːθ ˈveɪdər]","Люк Скайуокер|Luke Skywalker|[luːk ˈskaɪwɔːkər]","Магистр Йода|Master Yoda|[ˈmɑːstə ˈjəʊdə]",
+  "Оби-Ван Кеноби|Obi-Wan Kenobi|[ˈəʊbi wæn kəˈnəʊbi]","Хан Соло|Han Solo|[hæn ˈsəʊləʊ]","Чубакка|Chewbacca|[tʃuːˈbɑːkə]","Принцесса Лея|Princess Leia|[prɪnˈses ˈleɪə]","Мандалорец|Mandalorian|[ˌmændəˈlɔːriən]","Грогу (Малыш Йода)|Grogu|[ˈɡrəʊɡuː]","Дарт Мол|Darth Maul|[dɑːθ mɔːl]","Император Палпатин|Palpatine|[ˈpælpətiːn]","Штурмовик|Stormtrooper|[ˈstɔːmtruːpər]","Робот R2-D2|R2-D2|[ˌɑː tuː ˈdiː tuː]",
+  "Робот C-3PO|C-3PO|[ˌsiː ˈθriːpiəʊ]","Нео (Матрица)|Neo|[ˈniːəʊ]","Морфеус|Morpheus|[ˈmɔːfiəs]","Агент Смит|Agent Smith|[ˈeɪdʒənt smɪθ]","Терминатор|Terminator|[ˈtɜːmɪneɪtər]","Робокоп|RoboCop|[ˈrəʊbəʊkɒp]","Хищник|Predator|[ˈpredətər]","Чужой (Ксеноморф)|Alien|[ˈeɪliən]","Оптимус Прайм|Optimus Prime|[ˈɒptɪməs praɪm]","Бамблби|Bumblebee|[ˈbʌmblbiː]",
+  "Мегатрон|Megatron|[ˈmeɡətrɒn]","Годзилла|Godzilla|[ɡɒdˈzɪlə]","Кинг-Конг|King Kong|[kɪŋ kɒŋ]","Джек Воробей|Jack Sparrow|[dʒæk ˈspærəʊ]","Дейви Джонс|Davy Jones|[ˈdeɪvi dʒəʊnz]","Индиана Джонс|Indiana Jones|[ˌɪndiˈænə dʒəʊnz]","Джеймс Бонд|James Bond|[dʒeɪmz bɒnd]","Джон Уик|John Wick|[dʒɒn wɪk]","Рэмбо|Rambo|[ˈræmbəʊ]","Рокки Бальбоа|Rocky Balboa|[ˈrɒki bælˈbəʊə]",
+  "Форрест Гамп|Forrest Gump|[ˈfɒrɪst ɡʌmp]","Уолтер Уайт (Хайзенберг)|Walter White|[ˈwɔːltə waɪt]","Шерлок Холмс|Sherlock Holmes|[ˈʃɜːlɒk həʊmz]","Доктор Хаус|Doctor House|[ˈdɒktə haʊs]","Фредди Крюгер|Freddy Krueger|[ˈfredi ˈkruːɡər]","Джейсон Вурхиз|Jason Voorhees|[ˈdʒeɪsn ˈvɔːhiːz]","Клоун Пеннивайз|Pennywise|[ˈpeniwaɪz]","Крик (Призрачное лицо)|Ghostface|[ˈɡəʊstfeɪs]","Кукла Чаки|Chucky|[ˈtʃʌki]","Кукла Билли (Пила)|Billy Puppet|[ˈbɪli ˈpʌpɪt]",
+  "Зомби|Zombie|[ˈzɒmbi]","Скелет|Skeleton|[ˈskelɪtn]","Вампир (Дракула)|Vampire|[ˈvæmpaɪər]","Оборотень|Werewolf|[ˈweəwʊlf]","Мумия|Mummy|[ˈmʌmi]","Франкенштейн|Frankenstein|[ˈfræŋkənstaɪn]","Ведьма на метле|Witch|[wɪtʃ]","Некромант|Necromancer|[ˈnekrəʊmænsər]","Йети (Снежный человек)|Yeti|[ˈjeti]","Ангел|Angel|[ˈeɪndʒl]",
+  "Лизун (Охотники за привидениями)|Slimer|[ˈslaɪmər]","Всадник без головы|Headless Horseman|[ˈhedləs ˈhɔːsmən]","Гарри Поттер|Harry Potter|[ˈhæri ˈpɒtər]","Рон Уизли|Ron Weasley|[rɒn ˈwiːzli]","Гермиона Грейнджер|Hermione Granger|[hɜːˈmaɪəni ˈɡreɪndʒər]","Дамблдор|Dumbledore|[ˈdʌmbldɔːr]","Северус Снейп|Severus Snape|[ˈsevərəs sneɪp]","Волан-де-Морт|Voldemort|[ˈvɒldəmɔːt]","Хагрид|Hagrid|[ˈhæɡrɪd]","Добби|Dobby|[ˈdɒbi]",
+  "Драко Малфой|Draco Malfoy|[ˈdreɪkəʊ ˈmælfɔɪ]","Дементор|Dementor|[dɪˈmentɔːr]","Распределяющая шляпа|Sorting Hat|[ˈsɔːtɪŋ hæt]","Золотой снитч|Golden Snitch|[ˈɡəʊldən snɪtʃ]","Гэндальф|Gandalf|[ˈɡændælf]","Фродо Бэггинс|Frodo Baggins|[ˈfrəʊdəʊ ˈbæɡɪnz]","Голлум|Gollum|[ˈɡɒləm]","Арагорн|Aragorn|[ˈærəɡɔːn]","Леголас|Legolas|[ˈleɡəlæs]","Гимли|Gimli|[ˈɡɪmli]",
+  "Саурон|Sauron|[ˈsaʊrɒn]","Саруман|Saruman|[ˈsɑːrʊmæn]","Назгул|Nazgul|[ˈnæzɡuːl]","Балрог|Balrog|[ˈbælrɒɡ]","Древень (Энт)|Ent|[ent]","Геральт из Ривии|Geralt of Rivia|[ˈɡerəlt əv ˈrɪviə]","Цири|Ciri|[ˈsɪri]","Йеннифэр|Yennefer|[ˈjenɪfər]","Лютик|Dandelion|[ˈdændɪlaɪən]","Леший|Leshy|[ˈleʃi]",
+  "Джон Сноу|Jon Snow|[dʒɒn snəʊ]","Дейенерис Таргариен|Daenerys|[dəˈnerɪs]","Тирион Ланнистер|Tyrion Lannister|[ˈtɪriən ˈlænɪstər]","Король Ночи|Night King|[naɪt kɪŋ]","Дракон|Dragon|[ˈdræɡən]","Гоблин|Goblin|[ˈɡɒblɪn]","Орк|Orc|[ɔːk]","Тролль|Troll|[trɒl]","Огр|Ogre|[ˈəʊɡər]","Циклоп|Cyclops|[ˈsaɪklɒps]",
+  "Минотавр|Minotaur|[ˈmɪnətɔːr]","Кентавр|Centaur|[ˈsentɔːr]","Единорог|Unicorn|[ˈjuːnɪkɔːn]","Пегас|Pegasus|[ˈpeɡəsəs]","Грифон|Griffin|[ˈɡrɪfɪn]","Феникс|Phoenix|[ˈfiːnɪks]","Русалка|Mermaid|[ˈmɜːmeɪd]","Кракен|Kraken|[ˈkrɑːkən]","Медуза Горгона|Medusa|[məˈdjuːzə]","Цербер|Cerberus|[ˈsɜːbərəs]",
+  "Зевс|Zeus|[zjuːs]","Аид|Hades|[ˈheɪdiːz]","Геракл|Hercules|[ˈhɜːkjʊliːz]","Анубис|Anubis|[əˈnjuːbɪs]","Джинн|Genie|[ˈdʒiːni]","Голем|Golem|[ˈɡəʊləm]","Мимик (сундук с зубами)|Mimic|[ˈmɪmɪk]","Эльф|Elf|[elf]","Гном|Dwarf|[dwɔːf]","Фея|Fairy|[ˈfeəri]",
+  "Стив (Майнкрафт)|Steve|[stiːv]","Крипер|Creeper|[ˈkriːpər]","Эндермен|Enderman|[ˈendəmæn]","Житель (Майнкрафт)|Villager|[ˈvɪlɪdʒər]","Свинозомби|Zombie Pigman|[ˈzɒmbi ˈpɪɡmæn]","Иссушитель|Wither|[ˈwɪðər]","Марио|Mario|[ˈmæriəʊ]","Луиджи|Luigi|[luˈiːdʒi]","Боузер|Bowser|[ˈbaʊzər]","Ежик Соник|Sonic|[ˈsɒnɪk]",
+  "Пакман|Pac-Man|[ˈpækmæn]","Скорпион (Мортал Комбат)|Scorpion|[ˈskɔːpiən]","Саб-Зиро|Sub-Zero|[ˌsʌbˈzɪərəʊ]","Рейден|Raiden|[ˈreɪdən]","Шао Кан|Shao Kahn|[ʃaʊ kɑːn]","Лю Кан|Liu Kang|[ljuː kæŋ]","Кратос|Kratos|[ˈkreɪtɒs]","Думгай (Палач Рока)|Doom Slayer|[duːm ˈsleɪər]","Мастер Чиф|Master Chief|[ˈmɑːstə tʃiːf]","Лара Крофт|Lara Croft|[ˈlɑːrə krɒft]",
+  "Си-Джей (GTA)|CJ|[ˌsiːˈdʒeɪ]","Тревор (GTA)|Trevor|[ˈtrevər]","Артур Морган|Arthur Morgan|[ˈɑːθə ˈmɔːɡən]","Агент 47 (Хитман)|Agent 47|[ˈeɪdʒənt ˈfɔːti ˈsevn]","Эцио (Ассасин)|Ezio|[ˈetsiəʊ]","Гордон Фримен|Gordon Freeman|[ˈɡɔːdn ˈfriːmən]","Артас (Король-лич)|Arthas|[ˈɑːθəs]","Иллидан|Illidan|[ˈɪlɪdæn]","Элой (Horizon)|Aloy|[ˈeɪlɔɪ]","Царь Леонид (Спартанец)|King Leonidas|[kɪŋ ˌliːəˈnaɪdəs]",
+  "Шрек|Shrek|[ʃrek]","Осел (Шрек)|Donkey|[ˈdɒŋki]","Кот в сапогах|Puss in Boots|[pʊs ɪn buːts]","Фиона|Fiona|[fiˈəʊnə]","Лорд Фаркуад|Lord Farquaad|[lɔːd ˈfɑːkwɒd]","Губка Боб|SpongeBob|[ˈspʌndʒbɒb]","Патрик Стар|Patrick Star|[ˈpætrɪk stɑːr]","Сквидвард|Squidward|[ˈskwɪdwəd]","Мистер Крабс|Mr. Krabs|[ˈmɪstə kræbz]","Планктон|Plankton|[ˈplæŋktən]",
+  "Белка Сэнди|Sandy Cheeks|[ˈsændi tʃiːks]","Гомер Симпсон|Homer Simpson|[ˈhəʊmə ˈsɪmpsn]","Барт Симпсон|Bart Simpson|[bɑːt ˈsɪmpsn]","Мардж Симпсон|Marge Simpson|[mɑːdʒ ˈsɪmpsn]","Мистер Бернс|Mr. Burns|[ˈmɪstə bɜːnz]","Бендер (Футурама)|Bender|[ˈbendər]","Фрай|Fry|[fraɪ]","Лила|Leela|[ˈliːlə]","Зойдберг|Zoidberg|[ˈzɔɪdbɜːɡ]","Рик Санчез|Rick Sanchez|[rɪk ˈsæntʃez]",
+  "Морти|Morty|[ˈmɔːti]","Огурчик Рик|Pickle Rick|[ˈpɪkl rɪk]","Питер Гриффин|Peter Griffin|[ˈpiːtə ˈɡrɪfɪn]","Стьюи Гриффин|Stewie Griffin|[ˈstjuːi ˈɡrɪfɪn]","Эрик Картман|Eric Cartman|[ˈerɪk ˈkɑːtmən]","Кенни|Kenny|[ˈkeni]","Микки Маус|Mickey Mouse|[ˈmɪki maʊs]","Дональд Дак|Donald Duck|[ˈdɒnəld dʌk]","Скрудж Макдак|Scrooge McDuck|[skruːdʒ məkˈdʌk]","Гуфи|Goofy|[ˈɡuːfi]",
+  "Кот Том|Tom Cat|[tɒm kæt]","Мышонок Джерри|Jerry Mouse|[ˈdʒeri maʊs]","Багз Банни|Bugs Bunny|[bʌɡz ˈbʌni]","Скуби-Ду|Scooby-Doo|[ˈskuːbi duː]","Шэгги|Shaggy|[ˈʃæɡi]","Розовая Пантера|Pink Panther|[pɪŋk ˈpænθər]","Дятел Вуди|Woody Woodpecker|[ˈwʊdi ˈwʊdpekər]","Моряк Попай|Popeye|[ˈpɒpaɪ]","Аладдин|Aladdin|[əˈlædɪn]","Джафар|Jafar|[dʒəˈfɑːr]",
+  "Русалочка Ариэль|Ariel|[ˈeəriəl]","Урсула|Ursula|[ˈɜːsjʊlə]","Симба (Король Лев)|Simba|[ˈsɪmbə]","Шрам|Scar|[skɑːr]","Тимон|Timon|[tɪˈməʊn]","Пумба|Pumbaa|[ˈpʊmbə]","Тарзан|Tarzan|[ˈtɑːzæn]","Мулан|Mulan|[muːˈlæn]","Рапунцель|Rapunzel|[rəˈpʌnzl]","Эльза (Холодное сердце)|Elsa|[ˈelsə]",
+  "Снеговик Олаф|Olaf|[ˈəʊlæf]","Моана|Moana|[məʊˈɑːnə]","Мауи|Maui|[ˈmaʊi]","Стич|Stitch|[stɪtʃ]","Робот Валли|WALL-E|[ˈwɔːli]","Робот Ева|EVE|[iːv]","Шериф Вуди|Sheriff Woody|[ˈʃerɪf ˈwʊdi]","Базз Лайтер|Buzz Lightyear|[bʌz ˈlaɪtjɪər]","Майк Вазовски|Mike Wazowski|[maɪk wəˈzaʊski]","Салли (Корпорация монстров)|Sulley|[ˈsʌli]",
+  "Миньон|Minion|[ˈmɪnjən]","Грю|Gru|[ɡruː]","Панда По|Po|[pəʊ]","Мастер Шифу|Master Shifu|[ˈmɑːstə ˈʃiːfuː]","Тай Лунг|Tai Lung|[taɪ lʌŋ]","Беззубик (Ночная Фурия)|Toothless|[ˈtuːθləs]","Лев Алекс (Мадагаскар)|Alex the Lion|[ˈæleks ðə ˈlaɪən]","Король Джулиан|King Julien|[kɪŋ ˈdʒuːliən]","Жираф Мелман|Melman|[ˈmelmən]","Белка Скрэт (с желудем)|Scrat|[skræt]",
+  "Ленивец Сид|Sid the Sloth|[sɪd ðə sləʊθ]","Наруто|Naruto|[nɑːˈruːtəʊ]","Саске|Sasuke|[ˈsɑːskeɪ]","Какаши|Kakashi|[kɑːˈkɑːʃi]","Пикачу|Pikachu|[ˈpiːkətʃuː]","Чаризард|Charizard|[ˈtʃɑːrɪzɑːd]","Сейлор Мун|Sailor Moon|[ˈseɪlə muːn]","Сон Гоку|Son Goku|[sɒn ˈɡəʊkuː]","Сайтама (Ванпанчмен)|Saitama|[saɪˈtɑːmə]","Луффи (Ван Пис)|Luffy|[ˈluːfi]",
+  "Тоторо|Totoro|[ˈtɒtərəʊ]","Безликий (Унесенные призраками)|No-Face|[nəʊ feɪs]","Чебурашка|Cheburashka|[tʃebʊˈrɑːʃkə]","Крокодил Гена|Gena the Crocodile|[ˈɡenə ðə ˈkrɒkədaɪl]","Шапокляк|Shapoklyak|[ʃəpʌˈkljɑːk]","Винни-Пух|Winnie-the-Pooh|[ˈwɪni ðə puː]","Пятачок|Piglet|[ˈpɪɡlət]","Карлсон|Karlsson|[ˈkɑːlsn]","Буратино|Buratino|[bʊrəˈtiːnəʊ]","Карабас-Барабас|Karabas|[kərəˈbɑːs]",
+  "Кот Матроскин|Matroskin|[məˈtrɒskɪn]","Почтальон Печкин|Postman Pechkin|[ˈpəʊstmən ˈpetʃkɪn]","Волк (Ну, погоди!)|Wolf|[wʊlf]","Кот Леопольд|Leopold the Cat|[ˈliːəpəʊld ðə kæt]","Домовенок Кузя|Brownie Kuzya|[ˈbraʊni ˈkuːzjə]","Баба-Яга|Baba Yaga|[ˈbɑːbə jəˈɡɑː]","Кощей Бессмертный|Koschei|[kɒˈʃeɪ]","Змей Горыныч|Slavic Dragon|[ˈslɑːvɪk ˈdræɡən]","Водяной|Water Spirit|[ˈwɔːtə ˈspɪrɪt]","Колобок|Kolobok|[kələˈbɒk]",
+  "Лев|Lion|[ˈlaɪən]","Тигр|Tiger|[ˈtaɪɡər]","Леопард|Leopard|[ˈlepəd]","Пантера|Panther|[ˈpænθər]","Гепард|Cheetah|[ˈtʃiːtə]","Рысь|Lynx|[lɪŋks]","Пума|Puma|[ˈpjuːmə]","Домашний кот|Cat|[kæt]","Волк|Wolf|[wʊlf]","Лиса|Fox|[fɒks]",
+  "Овчарка|Shepherd dog|[ˈʃepəd dɒɡ]","Мопс|Pug|[pʌɡ]","Такса|Dachshund|[ˈdækshʊnd]","Бульдог|Bulldog|[ˈbʊldɒɡ]","Хаски|Husky|[ˈhʌski]","Пудель|Poodle|[ˈpuːdl]","Чихуахуа|Chihuahua|[tʃɪˈwɑːwə]","Бурый медведь|Brown bear|[braʊn beər]","Белый медведь|Polar bear|[ˈpəʊlə beər]","Панда|Panda|[ˈpændə]",
+  "Коала|Koala|[kəʊˈɑːlə]","Слон|Elephant|[ˈelɪfənt]","Мамонт|Mammoth|[ˈmæməθ]","Носорог|Rhinoceros|[raɪˈnɒsərəs]","Бегемот|Hippopotamus|[ˌhɪpəˈpɒtəməs]","Жираф|Giraffe|[dʒɪˈrɑːf]","Зебра|Zebra|[ˈzebrə]","Верблюд|Camel|[ˈkæml]","Лошадь|Horse|[hɔːs]","Пони|Pony|[ˈpəʊni]",
+  "Лама|Llama|[ˈlɑːmə]","Корова|Cow|[kaʊ]","Бык|Bull|[bʊl]","Коза|Goat|[ɡəʊt]","Баран|Ram|[ræm]","Свинья|Pig|[pɪɡ]","Дикий кабан|Wild boar|[waɪld bɔːr]","Олень|Deer|[dɪər]","Лось|Moose|[muːs]","Кенгуру|Kangaroo|[ˌkæŋɡəˈruː]",
+  "Шимпанзе|Chimpanzee|[ˌtʃɪmpænˈziː]","Горилла|Gorilla|[ɡəˈrɪlə]","Орангутан|Orangutan|[ɔːˈræŋʊtæn]","Ленивец|Sloth|[sləʊθ]","Заяц|Hare|[heər]","Белка|Squirrel|[ˈskwɪrəl]","Ежик|Hedgehog|[ˈhedʒhɒɡ]","Бобер|Beaver|[ˈbiːvər]","Енот|Raccoon|[rəˈkuːn]","Барсук|Badger|[ˈbædʒər]",
+  "Хомяк|Hamster|[ˈhæmstər]","Мышь|Mouse|[maʊs]","Крыса|Rat|[ræt]","Крот|Mole|[məʊl]","Летучая мышь|Bat|[bæt]","Скунс|Skunk|[skʌŋk]","Сурикат|Meerkat|[ˈmɪəkæt]","Выдра|Otter|[ˈɒtər]","Дикобраз|Porcupine|[ˈpɔːkjʊpaɪn]","Броненосец|Armadillo|[ˌɑːməˈdɪləʊ]",
+  "Орел|Eagle|[ˈiːɡl]","Сова|Owl|[aʊl]","Ворон|Raven|[ˈreɪvn]","Голубь|Pigeon|[ˈpɪdʒɪn]","Воробей|Sparrow|[ˈspærəʊ]","Синица|Titmouse|[ˈtɪtmaʊs]","Снегирь|Bullfinch|[ˈbʊlfɪntʃ]","Ласточка|Swallow|[ˈswɒləʊ]","Дятел|Woodpecker|[ˈwʊdpekər]","Кукушка|Cuckoo|[ˈkʊkuː]",
+  "Аист|Stork|[stɔːk]","Цапля|Heron|[ˈherən]","Фламинго|Flamingo|[fləˈmɪŋɡəʊ]","Павлин|Peacock|[ˈpiːkɒk]","Страус|Ostrich|[ˈɒstrɪtʃ]","Пингвин|Penguin|[ˈpeŋɡwɪn]","Пеликан|Pelican|[ˈpelɪkən]","Чайка|Seagull|[ˈsiːɡʌl]","Петух|Rooster|[ˈruːstər]","Курица|Chicken|[ˈtʃɪkɪn]",
+  "Индюк|Turkey|[ˈtɜːki]","Гусь|Goose|[ɡuːs]","Колибри|Hummingbird|[ˈhʌmɪŋbɜːd]","Тираннозавр|Tyrannosaurus|[tɪˌrænəˈsɔːrəs]","Трицератопс|Triceratops|[traɪˈserətɒps]","Птеродактиль|Pterodactyl|[ˌterəˈdæktɪl]","Крокодил|Crocodile|[ˈkrɒkədaɪl]","Черепаха|Turtle|[ˈtɜːtl]","Кобра|Cobra|[ˈkəʊbrə]","Удав|Boa|[ˈbəʊə]",
+  "Хамелеон|Chameleon|[kəˈmiːliən]","Ящерица|Lizard|[ˈlɪzəd]","Лягушка|Frog|[frɒɡ]","Жаба|Toad|[təʊd]","Акула|Shark|[ʃɑːk]","Дельфин|Dolphin|[ˈdɒlfɪn]","Синий кит|Blue whale|[bluː weɪl]","Осьминог|Octopus|[ˈɒktəpəs]","Краб|Crab|[kræb]","Медуза|Jellyfish|[ˈdʒelɪfɪʃ]",
+  "Бургер|Burger|[ˈbɜːɡər]","Чизбургер|Cheeseburger|[ˈtʃiːzbɜːɡər]","Хот-дог|Hot dog|[hɒt dɒɡ]","Пицца|Pizza|[ˈpiːtsə]","Шаурма|Shawarma|[ʃəˈwɑːmə]","Картошка фри|French fries|[frentʃ fraɪz]","Наггетсы|Nuggets|[ˈnʌɡɪts]","Роллы (Суши)|Sushi|[ˈsuːʃi]","Тако|Taco|[ˈtækəʊ]","Попкорн|Popcorn|[ˈpɒpkɔːn]",
+  "Чипсы|Chips|[tʃɪps]","Сухарики|Croutons|[ˈkruːtɒnz]","Бутерброд с икрой|Caviar sandwich|[ˈkæviɑː ˈsænwɪdʒ]","Сэндвич|Sandwich|[ˈsænwɪdʒ]","Стейк|Steak|[steɪk]","Шашлык|Kebab|[kɪˈbæb]","Куриная ножка|Chicken leg|[ˈtʃɪkɪn leɡ]","Котлета|Cutlet|[ˈkʌtlət]","Сосиска|Sausage|[ˈsɒsɪdʒ]","Колбаса|Salami|[səˈlɑːmi]",
+  "Бекон|Bacon|[ˈbeɪkən]","Окорок|Ham|[hæm]","Пельмени|Dumplings|[ˈdʌmplɪŋz]","Вареники|Pierogi|[pɪˈrəʊɡi]","Хинкали|Khinkali|[kɪnˈkɑːli]","Чебурек|Cheburek|[tʃebʊˈrek]","Пирожок|Patty|[ˈpæti]","Блинчик|Pancake|[ˈpænkeɪk]","Оладьи|Fritters|[ˈfrɪtəz]","Сырники|Cheese pancakes|[tʃiːz ˈpænkeɪks]",
+  "Яичница|Fried eggs|[fraɪd eɡz]","Вареное яйцо|Boiled egg|[bɔɪld eɡ]","Спагетти|Spaghetti|[spəˈɡeti]","Борщ|Borscht|[bɔːʃt]","Уха|Fish soup|[fɪʃ suːp]","Плов|Pilaf|[pɪˈlæf]","Гречка|Buckwheat|[ˈbʌkwiːt]","Картофельное пюре|Mashed potatoes|[mæʃt pəˈteɪtəʊz]","Квашеная капуста|Sauerkraut|[ˈsaʊəkraʊt]","Соленый огурец|Pickle|[ˈpɪkl]",
+  "Банан|Banana|[bəˈnɑːnə]","Апельсин|Orange|[ˈɒrɪndʒ]","Лимон|Lemon|[ˈlemən]","Лайм|Lime|[laɪm]","Грейпфрут|Grapefruit|[ˈɡreɪpfruːt]","Ананас|Pineapple|[ˈpaɪnæpl]","Кокос|Coconut|[ˈkəʊkənʌt]","Манго|Mango|[ˈmæŋɡəʊ]","Киви|Kiwi|[ˈkiːwiː]","Авокадо|Avocado|[ˌævəˈkɑːdəʊ]",
+  "Груша|Pear|[peər]","Персик|Peach|[piːtʃ]","Абрикос|Apricot|[ˈeɪprɪkɒt]","Слива|Plum|[plʌm]","Виноград|Grapes|[ɡreɪps]","Арбуз|Watermelon|[ˈwɔːtəmelən]","Дыня|Melon|[ˈmelən]","Гранат|Pomegranate|[ˈpɒmɪɡrænɪt]","Клубника|Strawberry|[ˈstrɔːbəri]","Вишня|Cherry|[ˈtʃeri]",
+  "Черешня|Sweet cherry|[swiːt ˈtʃeri]","Черника|Blueberry|[ˈbluːbəri]","Ежевика|Blackberry|[ˈblækbəri]","Клюква|Cranberry|[ˈkrænbəri]","Смородина|Currant|[ˈkʌrənt]","Крыжовник|Gooseberry|[ˈɡʊzbəri]","Облепиха|Sea buckthorn|[siː ˈbʌkθɔːn]","Помидор|Tomato|[təˈmɑːtəʊ]","Огурец|Cucumber|[ˈkjuːkʌmbər]","Морковь|Carrot|[ˈkærət]",
+  "Картошка|Potato|[pəˈteɪtəʊ]","Лук|Onion|[ˈʌnjən]","Чеснок|Garlic|[ˈɡɑːlɪk]","Капуста|Cabbage|[ˈkæbɪdʒ]","Брокколи|Broccoli|[ˈbrɒkəli]","Тыква|Pumpkin|[ˈpʌmpkɪn]","Кабачок|Zucchini|[zʊˈkiːni]","Баклажан|Eggplant|[ˈeɡplɑːnt]","Болгарский перец|Bell pepper|[bel ˈpepər]","Кукуруза|Corn|[kɔːn]",
+  "Горошек|Peas|[piːz]","Фасоль|Beans|[biːnz]","Редиска|Radish|[ˈrædɪʃ]","Свекла|Beetroot|[ˈbiːtruːt]","Белый гриб|Porcini|[pɔːˈtʃiːni]","Мухомор|Fly agaric|[flaɪ ˈæɡərɪk]","Грецкий орех|Walnut|[ˈwɔːlnʌt]","Арахис|Peanut|[ˈpiːnʌt]","Фисташки|Pistachios|[pɪˈstɑːʃiəʊz]","Семечки|Sunflower seeds|[ˈsʌnflaʊə siːdz]",
+  "Шоколадка|Chocolate|[ˈtʃɒklət]","Мороженое|Ice cream|[aɪs kriːm]","Торт|Cake|[keɪk]","Пончик|Donut|[ˈdəʊnʌt]","Круассан|Croissant|[ˈkwæsɒ̃]","Конфета|Candy|[ˈkændi]","Чупа-чупс|Lollipop|[ˈlɒlipɒp]","Сгущенка|Condensed milk|[kənˈdenst mɪlk]","Сыр|Cheese|[tʃiːz]","Баночка Кока-Колы|Coca-Cola can|[ˈkəʊkə ˈkəʊlə kæn]",
+  "Световой меч|Lightsaber|[ˈlaɪtseɪbər]","Лазерный бластер|Blaster|[ˈblɑːstər]","Катана|Katana|[kəˈtɑːnə]","Рыцарский меч|Sword|[sɔːd]","Кинжал|Dagger|[ˈdæɡər]","Сабля|Saber|[ˈseɪbər]","Шпага|Rapier|[ˈreɪpiər]","Лук со стрелами|Bow and arrows|[bəʊ ænd ˈærəʊz]","Арбалет|Crossbow|[ˈkrɒsbəʊ]","Рогатка|Slingshot|[ˈslɪŋʃɒt]",
+  "Бумеранг|Boomerang|[ˈbuːməræŋ]","Сюрикен|Shuriken|[ˈʃʊrɪken]","Нунчаки|Nunchucks|[ˈnʌntʃʌks]","Полицейская дубинка|Baton|[ˈbætɒn]","Кастет|Brass knuckles|[brɑːs ˈnʌklz]","Булава|Mace|[meɪs]","Боевой молот|Warhammer|[ˈwɔːhæmər]","Хлыст (Кнут)|Whip|[wɪp]","Лассо|Lasso|[læˈsuː]","Дробовик|Shotgun|[ˈʃɒtɡʌn]",
+  "Снайперская винтовка|Sniper rifle|[ˈsnaɪpə ˈraɪfl]","Пулемет|Machine gun|[məˈʃiːn ɡʌn]","Миниган|Minigun|[ˈmɪnɪɡʌn]","Базука (Гранатомет)|Bazooka|[bəˈzuːkə]","Огнемет|Flamethrower|[ˈfleɪmθrəʊər]","Электрошокер|Taser|[ˈteɪzər]","Перцовый баллончик|Pepper spray|[ˈpepə spreɪ]","Динамит|Dynamite|[ˈdaɪnəmaɪt]","Бомба с фитилем|Bomb|[bɒm]","Противопехотная мина|Landmine|[ˈlændmaɪn]",
+  "Ядерная ракета|Nuclear missile|[ˈnjuːkliə ˈmɪsaɪl]","Пушка|Cannon|[ˈkænən]","Катапульта|Catapult|[ˈkætəpʌlt]","Таран|Battering ram|[ˈbætərɪŋ ræm]","Рыцарский щит|Shield|[ʃiːld]","Кольчуга|Chainmail|[ˈtʃeɪnmeɪl]","Рыцарский шлем|Knight helmet|[naɪt ˈhelmɪt]","Бронежилет|Body armor|[ˈbɒdi ˈɑːmər]","Военные берцы|Combat boots|[ˈkɒmbæt buːts]","Наручники|Handcuffs|[ˈhændkʌfs]",
+  "Волшебная палочка|Magic wand|[ˈmædʒɪk wɒnd]","Магический посох|Magic staff|[ˈmædʒɪk stɑːf]","Хрустальный шар|Crystal ball|[ˈkrɪstl bɔːl]","Книга заклинаний|Spellbook|[ˈspelbʊk]","Зелье здоровья (красное)|Health potion|[helθ ˈpəʊʃn]","Зелье маны (синее)|Mana potion|[ˈmɑːnə ˈpəʊʃn]","Котел с зельем|Cauldron|[ˈkɔːldrən]","Ковер-самолет|Flying carpet|[ˈflaɪɪŋ ˈkɑːpɪt]","Сапоги-скороходы|Seven-league boots|[ˈsevn liːɡ buːts]","Шапка-невидимка|Invisibility cap|[ɪnˌvɪzəˈbɪləti kæp]",
+  "Волшебная лампа|Magic lamp|[ˈmædʒɪk læmp]","Кукла вуду|Voodoo doll|[ˈvuːduː dɒl]","Амулет на шее|Amulet|[ˈæmjʊlət]","Кольцо Всевластия|The One Ring|[ðə wʌn rɪŋ]","Меч в камне (Экскалибур)|Excalibur|[ekˈskælɪbər]","Святой Грааль|Holy Grail|[ˈhəʊli ɡreɪl]","Пиратский корабль|Pirate ship|[ˈpaɪrət ʃɪp]","Флаг Веселый Роджер|Jolly Roger|[ˈdʒɒli ˈrɒdʒər]","Черная метка|Black Spot|[blæk spɒt]","Пиратская треуголка|Tricorn hat|[ˈtraɪkɔːn hæt]",
+  "Повязка на глаз|Eyepatch|[ˈaɪpætʃ]","Деревянная нога|Peg leg|[peɡ leɡ]","Подзорная труба|Spyglass|[ˈspaɪɡlɑːs]","Карта сокровищ|Treasure map|[ˈtreʒə mæp]","Морской якорь|Anchor|[ˈæŋkər]","Дьявол|Devil|[ˈdevl]","Штурвал корабля|Ship's wheel|[ʃɪps wiːl]","Спасательный круг|Lifebuoy|[ˈlaɪfbɔɪ]","Надувная лодка|Inflatable boat|[ɪnˈfleɪtəbl bəʊt]","Яхта|Yacht|[jɒt]",
+  "Титаник (Лайнер)|Titanic|[taɪˈtænɪk]","Авианосец|Aircraft carrier|[ˈeəkrɑːft ˈkæriər]","Гидроцикл|Jet ski|[dʒet skiː]","Байдарка|Kayak|[ˈkaɪæk]","Весло|Paddle|[ˈpædl]","Велосипед|Bicycle|[ˈbaɪsɪkl]","Самокат|Scooter|[ˈskuːtər]","Скейтборд|Skateboard|[ˈskeɪtbɔːd]","Гироскутер|Hoverboard|[ˈhɒvəbɔːd]","Роликовые коньки|Roller skates|[ˈrəʊlə skeɪts]",
+  "Спортивный мотоцикл|Sportbike|[ˈspɔːtbaɪk]","Квадроцикл|Quad bike|[kwɒd baɪk]","Снегоход|Snowmobile|[ˈsnəʊməbiːl]","Полицейская машина|Police car|[pəˈliːs kɑːr]","Машина скорой помощи|Ambulance|[ˈæmbjələns]","Пожарная машина|Fire truck|[ˈfaɪə trʌk]","Такси|Taxi|[ˈtæksi]","Лимузин|Limousine|[ˈlɪməziːn]","Джип (Внедорожник)|SUV|[ˌesjuːˈviː]","Кабриолет|Convertible|[kənˈvɜːtəbl]",
+  "Автобус|Bus|[bʌs]","Троллейбус|Trolleybus|[ˈtrɒlibʌs]","Трактор|Tractor|[ˈtræktər]","Экскаватор|Excavator|[ˈekskəveɪtər]","Бульдозер|Bulldozer|[ˈbʊldəʊzər]","Бетономешалка|Cement mixer|[sɪˈment ˈmɪksər]","Автокран|Mobile crane|[ˈməʊbaɪl kreɪn]","Паровоз|Steam train|[stiːm treɪn]","Вертолет|Helicopter|[ˈhelɪkɒptər]","Космический шаттл|Space shuttle|[speɪs ˈʃʌtl]",
+  "Ноутбук|Laptop|[ˈlæptɒp]","Системный блок|PC tower|[ˌpiːˈsiː ˈtaʊər]","Монитор|Monitor|[ˈmɒnɪtər]","Клавиатура|Keyboard|[ˈkiːbɔːd]","Компьютерная мышь|Mouse|[maʊs]","Флешка|Flash drive|[flæʃ draɪv]","Жесткий диск|Hard drive|[hɑːd draɪv]","Видеокарта|Graphics card|[ˈɡræfɪks kɑːd]","Роутер|Router|[ˈruːtər]","Принтер|Printer|[ˈprɪntər]",
+  "Планшет|Tablet|[ˈtæblət]","Кнопочная Нокиа|Nokia phone|[ˈnɒkiə fəʊn]","Большие наушники|Headphones|[ˈhedfəʊnz]","Беспроводные наушники|Earbuds|[ˈɪəbʌdz]","Блютуз-колонка|Bluetooth speaker|[ˈbluːtuːθ ˈspiːkər]","Микрофон|Microphone|[ˈmaɪkrəfəʊn]","Веб-камера|Webcam|[ˈwebkæm]","Геймпад (Джойстик)|Gamepad|[ˈɡeɪmpæd]","VR-очки|VR headset|[ˌviːˈɑː ˈhedset]","Квадрокоптер (Дрон)|Drone|[drəʊn]",
+  "Телевизор|Television|[ˈtelɪvɪʒn]","Пульт от телевизора|Remote control|[rɪˈməʊt kənˈtrəʊl]","Батарейка|Battery|[ˈbætəri]","Зарядка для телефона|Charger|[ˈtʃɑːdʒər]","Удлинитель|Extension cord|[ɪkˈstenʃn kɔːd]","Розетка|Socket|[ˈsɒkɪt]","Лампочка|Light bulb|[laɪt bʌlb]","Холодильник|Refrigerator|[rɪˈfrɪdʒəreɪtər]","Стиральная машина|Washing machine|[ˈwɒʃɪŋ məˈʃiːn]","Микроволновка|Microwave|[ˈmaɪkrəweɪv]",
+  "Пылесос|Vacuum cleaner|[ˈvækjuəm ˈkliːnər]","Робот-пылесос|Robot vacuum|[ˈrəʊbɒt ˈvækjuəm]","Электрический чайник|Electric kettle|[ɪˈlektrɪk ˈketl]","Тостер|Toaster|[ˈtəʊstər]","Блендер|Blender|[ˈblendər]","Мясорубка|Meat grinder|[miːt ˈɡraɪndər]","Кофемашина|Coffee maker|[ˈkɒfi ˈmeɪkər]","Вентилятор|Fan|[fæn]","Кондиционер|Air conditioner|[eə kənˈdɪʃənər]","Обогреватель|Heater|[ˈhiːtər]",
+  "Фен для волос|Hair dryer|[heə ˈdraɪər]","Швейная машинка|Sewing machine|[ˈsəʊɪŋ məˈʃiːn]","Диван|Sofa|[ˈsəʊfə]","Кровать|Bed|[bed]","Кресло|Armchair|[ˈɑːmtʃeər]","Офисный стул|Office chair|[ˈɒfɪs tʃeər]","Пассажирский Боинг|Boeing 747|[ˈbəʊɪŋ]","Письменный стол|Desk|[desk]","Шкаф|Wardrobe|[ˈwɔːdrəʊb]","Комод|Chest of drawers|[tʃest əv drɔːz]",
+  "Тумбочка|Nightstand|[ˈnaɪtstænd]","Книжная полка|Bookshelf|[ˈbʊkʃelf]","Табуретка|Stool|[stuːl]","Зеркало|Mirror|[ˈmɪrər]","Люстра|Chandelier|[ˌʃændəˈlɪər]","Настольная лампа|Desk lamp|[desk læmp]","Ковер|Carpet|[ˈkɑːpɪt]","Шторы|Curtains|[ˈkɜːtnz]","Подушка|Pillow|[ˈpɪləʊ]","Одеяло|Blanket|[ˈblæŋkɪt]",
+  "Ванна|Bathtub|[ˈbɑːθtʌb]","Унитаз|Toilet|[ˈtɔɪlət]","Раковина|Sink|[sɪŋk]","Душевая лейка|Showerhead|[ˈʃaʊəhed]","Водопроводный кран|Faucet|[ˈfɔːsɪt]","Швабра|Mop|[mɒp]","Веник|Broom|[bruːm]","Мусорное ведро|Trash can|[træʃ kæn]","Тазик|Washbasin|[ˈwɒʃbeɪsn]","Прищепка|Clothespin|[ˈkləʊðzpɪn]",
+  "Губка для посуды|Sponge|[spʌndʒ]","Кусок мыла|Soap|[səʊp]","Зубная щетка|Toothbrush|[ˈtuːθbrʌʃ]","Зубная паста|Toothpaste|[ˈtuːθpeɪst]","Бритва|Razor|[ˈreɪzər]","Расческа|Comb|[kəʊm]","Игровой автомат (Джекпот)|Slot machine|[slɒt məˈʃiːn]","Ножницы|Scissors|[ˈsɪzəz]","Туалетная бумага|Toilet paper|[ˈtɔɪlət ˈpeɪpər]","Сковорода|Frying pan|[ˈfraɪɪŋ pæn]",
+  "Кастрюля|Saucepan|[ˈsɔːspən]","Тарелка|Plate|[pleɪt]","Кружка|Mug|[mʌɡ]","Стакан|Glass|[ɡlɑːs]","Вилка|Fork|[fɔːk]","Ложка|Spoon|[spuːn]","Кухонный нож|Kitchen knife|[ˈkɪtʃɪn naɪf]","Терка|Grater|[ˈɡreɪtər]","Скалка|Rolling pin|[ˈrəʊlɪŋ pɪn]","Разделочная доска|Cutting board|[ˈkʌtɪŋ bɔːd]",
+  "Штопор|Corkscrew|[ˈkɔːkskruː]","Термос|Thermos|[ˈθɜːməs]","Самовар|Samovar|[ˈsæməvɑːr]","Кроссовки|Sneakers|[ˈsniːkəz]","Резиновые сапоги|Rubber boots|[ˈrʌbə buːts]","Валенки|Felt boots|[felt buːts]","Тапочки|Slippers|[ˈslɪpəz]","Футболка|T-shirt|[ˈtiːʃɜːt]","Джинсы|Jeans|[dʒiːnz]","Шапка-ушанка|Ushanka hat|[ʊˈʃæŋkə hæt]",
+  "Куртка|Jacket|[ˈdʒækɪt]","Шуба|Fur coat|[fɜː kəʊt]","Рубашка|Shirt|[ʃɜːt]","Свитер|Sweater|[ˈswetər]","Худи (Толстовка)|Hoodie|[ˈhʊdi]","Шорты|Shorts|[ʃɔːts]","Платье|Dress|[dres]","Деловой костюм|Suit|[suːt]","Галстук|Tie|[taɪ]","Ремень|Belt|[belt]",
+  "Носок|Sock|[sɒk]","Варежки|Mittens|[ˈmɪtnz]","Шарф|Scarf|[skɑːf]","Кепка (Бейсболка)|Baseball cap|[ˈbeɪsbɔːl kæp]","Ковбойская шляпа|Cowboy hat|[ˈkaʊbɔɪ hæt]","Сомбреро|Sombrero|[sɒmˈbreərəʊ]","Халат|Bathrobe|[ˈbɑːθrəʊb]","Купальник|Swimsuit|[ˈswɪmsuːt]","Фартук|Apron|[ˈeɪprən]","Туфли на каблуке|High heels|[haɪ hiːlz]",
+  "Зонтик|Umbrella|[ʌmˈbrelə]","Рюкзак|Backpack|[ˈbækpæk]","Женская сумочка|Handbag|[ˈhændbæɡ]","Кошелек|Wallet|[ˈwɒlɪt]","Связка ключей|Bunch of keys|[bʌntʃ əv kiːz]","Дверная ручка|Doorknob|[ˈdɔːnɒb]","Свеча|Candle|[ˈkændl]","Зажигалка|Lighter|[ˈlaɪtər]","Коробок спичек|Matchbox|[ˈmætʃbɒks]","Фонарик|Flashlight|[ˈflæʃlaɪt]",
+  "Батарея отопления|Radiator|[ˈreɪdieɪtər]","Иголка с ниткой|Needle and thread|[ˈniːdl ænd θred]","Пуговица|Button|[ˈbʌtn]","Булавка|Safety pin|[ˈseɪfti pɪn]","Наручные часы|Wristwatch|[ˈrɪstwɒtʃ]","Губная помада|Lipstick|[ˈlɪpstɪk]","Флакон духов|Perfume|[ˈpɜːfjuːm]","Книга|Book|[bʊk]","Тетрадь|Notebook|[ˈnəʊtbʊk]","Шариковая ручка|Ballpoint pen|[ˈbɔːlpɔɪnt pen]",
+  "Карандаш|Pencil|[ˈpensl]","Ластик|Eraser|[ɪˈreɪzər]","Линейка|Ruler|[ˈruːlər]","Кисточка для рисования|Paintbrush|[ˈpeɪntbrʌʃ]","Краски (Акварель)|Watercolors|[ˈwɔːtəkʌləz]","Фломастер|Marker|[ˈmɑːkər]","Степлер|Stapler|[ˈsteɪplər]","Скрепка|Paperclip|[ˈpeɪpəklɪp]","Рулон скотча|Scotch tape|[skɒtʃ teɪp]","Школьная доска|Chalkboard|[ˈtʃɔːkbɔːd]",
+  "Молоток|Hammer|[ˈhæmər]","Отвертка|Screwdriver|[ˈskruːdraɪvər]","Плоскогубцы|Pliers|[ˈplaɪəz]","Гаечный ключ|Wrench|[rentʃ]","Ручная пила|Handsaw|[ˈhændsɔː]","Шуруповерт|Cordless drill|[ˈkɔːdləs drɪl]","Перфоратор|Rotary hammer|[ˈrəʊtəri ˈhæmər]","Болгарка|Angle grinder|[ˈæŋɡl ˈɡraɪndər]","Паяльник|Soldering iron|[ˈsəʊldərɪŋ ˈaɪən]","Синяя изолента|Duct tape|[dʌkt teɪp]",
+  "Мультиметр|Multimeter|[ˈmʌltɪmiːtər]","Рулетка|Tape measure|[teɪp ˈmeʒər]","Строительный уровень|Spirit level|[ˈspɪrɪt ˈlevl]","Гвоздь|Nail|[neɪl]","Саморез|Screw|[skruː]","Болт с гайкой|Bolt and nut|[bəʊlt ænd nʌt]","Пружина|Spring|[sprɪŋ]","Шестеренка|Gear|[ɡɪər]","Цепь|Chain|[tʃeɪn]","Лопата|Shovel|[ˈʃʌvl]",
+  "Грабли|Rake|[reɪk]","Вилы|Pitchfork|[ˈpɪtʃfɔːk]","Садовая тачка|Wheelbarrow|[ˈwiːlbærəʊ]","Лейка|Watering can|[ˈwɔːtərɪŋ kæn]","Стремянка|Stepladder|[ˈsteplædər]","Малярный валик|Paint roller|[peɪnt ˈrəʊlər]","Кирпич|Brick|[brɪk]","Бревно|Log|[lɒɡ]","Доска|Plank|[plæŋk]","Колючая проволока|Barbed wire|[bɑːbd ˈwaɪər]",
+  "Акустическая гитара|Acoustic guitar|[əˈkuːstɪk ɡɪˈtɑːr]","Скрипка|Violin|[ˌvaɪəˈlɪn]","Барабан|Drum|[drʌm]","Музыкальная труба|Trumpet|[ˈtrʌmpɪt]","Саксофон|Saxophone|[ˈsæksəfəʊn]","Баян|Accordion|[əˈkɔːdiən]","Балалайка|Balalaika|[ˌbæləˈlaɪkə]","Арфа|Harp|[hɑːp]","Футбольный мяч|Soccer ball|[ˈsɒkə bɔːl]","Баскетбольный мяч|Basketball|[ˈbɑːskɪtbɔːl]",
+  "Теннисная ракетка|Tennis racket|[ˈtenɪs ˈrækɪt]","Хоккейная клюшка|Hockey stick|[ˈhɒki stɪk]","Шайба|Puck|[pʌk]","Бейсбольная бита|Baseball bat|[ˈbeɪsbɔːl bæt]","Боксерская груша|Punching bag|[ˈpʌntʃɪŋ bæɡ]","Штанга|Barbell|[ˈbɑːbel]","Гантель|Dumbbell|[ˈdʌmbel]","Лыжи|Skis|[skiːz]","Сноуборд|Snowboard|[ˈsnəʊbɔːd]","Удочка|Fishing rod|[ˈfɪʃɪŋ rɒd]",
+  "Космонавт|Astronaut|[ˈæstrənɔːt]","Пират|Pirate|[ˈpaɪrət]","Ниндзя|Ninja|[ˈnɪndʒə]","Самурай|Samurai|[ˈsæmʊraɪ]","Рыцарь|Knight|[naɪt]","Викинг|Viking|[ˈvaɪkɪŋ]","Ковбой|Cowboy|[ˈkaʊbɔɪ]","Индеец|Native American|[ˈneɪtɪv əˈmerɪkən]","Гладиатор|Gladiator|[ˈɡlædieɪtər]","Мушкетер|Musketeer|[ˌmʌskɪˈtɪər]",
+  "Пожарный|Firefighter|[ˈfaɪəfaɪtər]","Полицейский|Policeman|[pəˈliːsmən]","Врач|Doctor|[ˈdɒktər]","Повар|Chef|[ʃef]","Клоун|Clown|[klaʊn]","Укротитель тигров|Tiger tamer|[ˈtaɪɡə ˈteɪmər]","Художник|Painter|[ˈpeɪntər]","Моряк|Sailor|[ˈseɪlər]","Водолаз|Diver|[ˈdaɪvər]","Шахтер|Miner|[ˈmaɪnər]",
+  "Сварщик|Welder|[ˈweldər]","Строитель|Builder|[ˈbɪldər]","Кузнец|Blacksmith|[ˈblæksmɪθ]","Судья|Judge|[dʒʌdʒ]","Заключенный в полосатой робе|Prisoner|[ˈprɪznər]","Король|King|[kɪŋ]","Королева|Queen|[kwiːn]","Принцесса|Princess|[prɪnˈses]","Шут|Jester|[ˈdʒestər]","Палач|Executioner|[ˌeksɪˈkjuːʃənər]",
+  "Шаман|Shaman|[ˈʃɑːmən]","Монах|Monk|[mʌŋk]","Фараон|Pharaoh|[ˈfeərəʊ]","Первобытный человек|Caveman|[ˈkeɪvmæn]","Солдат|Soldier|[ˈsəʊldʒər]","Снайпер в маскхалате|Sniper|[ˈsnaɪpər]","Детектив с лупой|Detective|[dɪˈtektɪv]","Ученый в халате|Scientist|[ˈsaɪəntɪst]","Хакер в капюшоне|Hacker|[ˈhækər]","Диджей за пультом|DJ|[ˌdiːˈdʒeɪ]",
+  "Шприц|Syringe|[sɪˈrɪndʒ]","Таблетка|Pill|[pɪl]","Бинт|Bandage|[ˈbændɪdʒ]","Пластырь|Band-Aid|[ˈbændeɪd]","Костыль|Crutch|[krʌtʃ]","Инвалидная коляска|Wheelchair|[ˈwiːltʃeər]","Микроскоп|Microscope|[ˈmaɪkrəskəʊp]","Телескоп|Telescope|[ˈtelɪskəʊp]","Бинокль|Binoculars|[bɪˈnɒkjələz]","Компас|Compass|[ˈkʌmpəs]",
+  "Магнит|Magnet|[ˈmæɡnɪt]","Палатка|Tent|[tent]","Спальный мешок|Sleeping bag|[ˈsliːpɪŋ bæɡ]","Походный котелок|Camp pot|[kæmp pɒt]","Дуб|Oak|[əʊk]","Береза|Birch|[bɜːtʃ]","Новогодняя елка|Christmas tree|[ˈkrɪsməs triː]","Пальма|Palm tree|[pɑːm triː]","Кактус|Cactus|[ˈkæktəs]","Бамбук|Bamboo|[bæmˈbuː]",
+  "Ромашка|Chamomile|[ˈkæməmaɪl]","Тюльпан|Tulip|[ˈtjuːlɪp]","Одуванчик|Dandelion|[ˈdændɪlaɪən]","Подсолнух|Sunflower|[ˈsʌnflaʊər]","Крапива|Nettle|[ˈnetl]","Лопух|Burdock|[ˈbɜːdɒk]","Кленовый лист|Maple leaf|[ˈmeɪpl liːf]","Шишка|Pinecone|[ˈpaɪnkəʊn]","Желудь|Acorn|[ˈeɪkɔːn]","Вулкан|Volcano|[vɒlˈkeɪnəʊ]",
+  "Айсберг|Iceberg|[ˈaɪsbɜːɡ]","Водопад|Waterfall|[ˈwɔːtəfɔːl]","Торнадо (Смерч)|Tornado|[tɔːˈneɪdəʊ]","Радуга|Rainbow|[ˈreɪnbəʊ]","Снеговик|Snowman|[ˈsnəʊmæn]","Снежинка|Snowflake|[ˈsnəʊfleɪk]","Сосулька|Icicle|[ˈaɪsɪkl]","Солнце|Sun|[sʌn]","Луна (Месяц)|Moon|[muːn]","Планета Сатурн|Saturn|[ˈsætɜːn]",
+  "Метеорит|Meteorite|[ˈmiːtiəraɪt]","Черная дыра|Black hole|[blæk həʊl]","Египетская пирамида|Pyramid|[ˈpɪrəmɪd]","Сфинкс|Sphinx|[sfɪŋks]","Статуя Свободы|Statue of Liberty|[ˈstætʃuː əv ˈlɪbəti]","Эйфелева башня|Eiffel Tower|[ˈaɪfl ˈtaʊər]","Маяк|Lighthouse|[ˈlaɪthaʊs]","Ветряная мельница|Windmill|[ˈwɪndmɪl]","Колодец|Water well|[ˈwɔːtə wel]","Сейф|Safe|[seɪf]",
+  "Копилка-свинья|Piggy bank|[ˈpɪɡi bæŋk]","Банковская карта|Bank card|[bæŋk kɑːd]","Золотой кубок|Golden goblet|[ˈɡəʊldən ˈɡɒblət]","Хрустальный череп|Crystal skull|[ˈkrɪstl skʌl]","Изумруд|Emerald|[ˈemərəld]","Рубин|Ruby|[ˈruːbi]","Жемчужина в ракушке|Pearl|[pɜːl]","Царский скипетр|Scepter|[ˈseptər]","Золотой трон|Golden throne|[ˈɡəʊldən θrəʊn]","Сундук с сокровищами|Treasure chest|[ˈtreʒə tʃest]"
+];
+
+// Палитра контрастных темных оттенков для строк (отлично читается белый текст)
+const rowPalette = [
+  "#111827", "#1e1b4b", "#31102f", "#0f292a", "#2e1065",
+  "#172554", "#3b0764", "#062e22", "#3f1320", "#1f2438",
+  "#27173a", "#0c2536", "#331812", "#14291b", "#2d1233"
+];
+
+const STORAGE_KEY = 'mnemonic_1000_floating_v2';
+const THEME_KEY = 'mnemonic_gender_theme';
+
+let wordsData = {};
+let activeRange = [1, 100];
+
+function getDefaultRowColor(idx) {
+  return rowPalette[(idx - 1) % rowPalette.length];
+}
+
+function buildDefaultData() {
+  const data = {};
+  rawItems.forEach((entry, index) => {
+    const id = index + 1;
+    const [ru, en, tr] = entry.split('|');
+    data[id] = {
+      ru: ru || '',
+      en: en || '',
+      tr: tr || '',
+      rowBg: getDefaultRowColor(id),
+      styles: {
+        num: { bg: '#090d16', color: '#ffffff' },
+        ru:  { bg: '#090d16', color: '#ffffff' },
+        en:  { bg: '#090d16', color: '#38bdf8' },
+        tr:  { bg: '#090d16', color: '#cbd5e1' }
+      }
+    };
+  });
+  return data;
+}
+
+function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed[1] && typeof parsed[1] === 'object') {
+        wordsData = parsed;
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  wordsData = buildDefaultData();
+  saveData(false);
+}
+
+function saveData(notify = true) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(wordsData));
+  if (notify) showToast('Изменения сохранены');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => toast.classList.remove('show'), 1700);
+}
+
+function renderTabs() {
+  const container = document.getElementById('tabsContainer');
+  container.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.className = `tab-btn ${activeRange[0] === 1 && activeRange[1] === 1000 ? 'active' : ''}`;
+  allBtn.textContent = 'Все (1–1000)';
+  allBtn.onclick = () => { activeRange = [1, 1000]; renderTabs(); renderRows(); };
+  container.appendChild(allBtn);
+
+  for (let i = 0; i < 10; i++) {
+    const start = i * 100 + 1;
+    const end = (i + 1) * 100;
+    const btn = document.createElement('button');
+    btn.className = `tab-btn ${activeRange[0] === start && activeRange[1] === end ? 'active' : ''}`;
+    btn.textContent = `${start}–${end}`;
+    btn.onclick = () => {
+      activeRange = [start, end];
+      renderTabs();
+      renderRows();
+    };
+    container.appendChild(btn);
+  }
+}
+
+function createEditableCell(id, fieldKey, valueText) {
+  const item = wordsData[id];
+  const cellStyle = item.styles[fieldKey] || { bg: '#090d16', color: '#ffffff' };
+
+  const cell = document.createElement('div');
+  cell.className = 'floating-cell';
+  cell.style.backgroundColor = cellStyle.bg;
+  cell.style.color = cellStyle.color;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'cell-input';
+  input.value = valueText;
+  input.addEventListener('change', (e) => {
+    wordsData[id][fieldKey] = e.target.value.trim();
+    saveData(true);
+  });
+
+  const tools = document.createElement('div');
+  tools.className = 'cell-color-tools';
+
+  // Выбор цвета фона ячейки
+  const bgWrap = document.createElement('label');
+  bgWrap.className = 'color-picker-wrap';
+  bgWrap.title = 'Цвет фона ячейки';
+  bgWrap.style.backgroundColor = cellStyle.bg;
+  bgWrap.textContent = 'Ф';
+  const bgInput = document.createElement('input');
+  bgInput.type = 'color';
+  bgInput.value = cellStyle.bg;
+  bgInput.addEventListener('input', (e) => {
+    const val = e.target.value;
+    cell.style.backgroundColor = val;
+    bgWrap.style.backgroundColor = val;
+    wordsData[id].styles[fieldKey].bg = val;
+    saveData(false);
+  });
+  bgWrap.appendChild(bgInput);
+
+  // Выбор цвета текста ячейки
+  const txtWrap = document.createElement('label');
+  txtWrap.className = 'color-picker-wrap';
+  txtWrap.title = 'Цвет текста ячейки';
+  txtWrap.style.backgroundColor = '#1e293b';
+  txtWrap.style.color = cellStyle.color;
+  txtWrap.textContent = 'Т';
+  const txtInput = document.createElement('input');
+  txtInput.type = 'color';
+  txtInput.value = cellStyle.color;
+  txtInput.addEventListener('input', (e) => {
+    const val = e.target.value;
+    cell.style.color = val;
+    txtWrap.style.color = val;
+    wordsData[id].styles[fieldKey].color = val;
+    saveData(false);
+  });
+  txtWrap.appendChild(txtInput);
+
+  tools.appendChild(bgWrap);
+  tools.appendChild(txtWrap);
+
+  cell.appendChild(input);
+  cell.appendChild(tools);
+  return cell;
+}
+
+function renderRows() {
+  const container = document.getElementById('rowsContainer');
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  container.innerHTML = '';
+
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 1; i <= 1000; i++) {
+    const item = wordsData[i];
+    if (!item) continue;
+
+    if (query) {
+      const matchNum = String(i).includes(query);
+      const matchRu = item.ru.toLowerCase().includes(query);
+      const matchEn = item.en.toLowerCase().includes(query);
+      if (!matchNum && !matchRu && !matchEn) continue;
+    } else {
+      if (i < activeRange[0] || i > activeRange[1]) continue;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'word-row';
+    row.style.backgroundColor = item.rowBg || getDefaultRowColor(i);
+
+    // Ячейка номера + выбор фона всей строки и самой ячейки номера
+    const numCell = document.createElement('div');
+    numCell.className = 'floating-cell num-cell';
+    const numStyle = item.styles?.num || { bg: '#090d16', color: '#ffffff' };
+    numCell.style.backgroundColor = numStyle.bg;
+    numCell.style.color = numStyle.color;
+
+    const numText = document.createElement('span');
+    numText.textContent = i;
+
+    const rowTools = document.createElement('div');
+    rowTools.className = 'cell-color-tools';
+
+    const rowBgWrap = document.createElement('label');
+    rowBgWrap.className = 'color-picker-wrap';
+    rowBgWrap.title = 'Цвет фона всей строки';
+    rowBgWrap.style.backgroundColor = item.rowBg;
+    rowBgWrap.textContent = 'С';
+    const rowBgInput = document.createElement('input');
+    rowBgInput.type = 'color';
+    rowBgInput.value = item.rowBg;
+    rowBgInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      row.style.backgroundColor = val;
+      rowBgWrap.style.backgroundColor = val;
+      wordsData[i].rowBg = val;
+      saveData(false);
+    });
+    rowBgWrap.appendChild(rowBgInput);
+
+    const numTxtWrap = document.createElement('label');
+    numTxtWrap.className = 'color-picker-wrap';
+    numTxtWrap.title = 'Цвет цифры';
+    numTxtWrap.style.color = numStyle.color;
+    numTxtWrap.textContent = '№';
+    const numTxtInput = document.createElement('input');
+    numTxtInput.type = 'color';
+    numTxtInput.value = numStyle.color;
+    numTxtInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      numCell.style.color = val;
+      numTxtWrap.style.color = val;
+      wordsData[i].styles.num.color = val;
+      saveData(false);
+    });
+    numTxtWrap.appendChild(numTxtInput);
+
+    rowTools.appendChild(rowBgWrap);
+    rowTools.appendChild(numTxtWrap);
+    numCell.appendChild(numText);
+    numCell.appendChild(rowTools);
+
+    // Ячейки: Русское слово, Английский перевод, Транскрипция
+    const ruCell = createEditableCell(i, 'ru', item.ru);
+    const enCell = createEditableCell(i, 'en', item.en);
+    const trCell = createEditableCell(i, 'tr', item.tr);
+
+    row.appendChild(numCell);
+    row.appendChild(ruCell);
+    row.appendChild(enCell);
+    row.appendChild(trCell);
+
+    fragment.appendChild(row);
+  }
+
+  container.appendChild(fragment);
+}
+
+// Экспорт в JSON
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const dataStr = JSON.stringify(wordsData, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mnemonic-1-1000-ru-en.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('JSON файл сохранен');
+});
+
+// Импорт из JSON
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const imported = JSON.parse(event.target.result);
+      if (typeof imported === 'object' && imported !== null) {
+        wordsData = imported;
+        saveData(false);
+        renderRows();
+        showToast('Список и цвета успешно импортированы!');
+      }
+    } catch (err) {
+      alert('Ошибка чтения JSON файла');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// Сброс к исходному состоянию
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (confirm('Сбросить все изменения и цвета к базовому списку 1–1000?')) {
+    wordsData = buildDefaultData();
+    saveData(true);
+    renderRows();
+  }
+});
+
+// Поиск
+document.getElementById('searchInput').addEventListener('input', renderRows);
+
+// Переключение Мужской / Женской темы
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeBtn.textContent = theme === 'male' ? '🌸 Женская тема' : '👔 Мужская тема';
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+const savedTheme = localStorage.getItem(THEME_KEY) || 'male';
+applyTheme(savedTheme);
+
+themeBtn.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  applyTheme(current === 'male' ? 'female' : 'male');
+});
+
+// Инициализация
+loadData();
+renderTabs();
+renderRows();
+</script>
+
+</body>
+</html>
